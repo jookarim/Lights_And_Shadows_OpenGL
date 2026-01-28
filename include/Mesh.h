@@ -42,7 +42,7 @@ namespace ke
 		Mesh& operator=(Mesh&& other) noexcept;
 
 		void bind() const;
-
+		GLuint getVAO() const { return m_vao; }
 		uint32_t getIndexCount() const { return m_indexCount; }
 	};
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Window.h"
 #include "Mesh.h"
+#include "RenderCommand.h"
 
 int main()
 {
@@ -28,9 +29,15 @@ int main()
 
 		ke::Mesh mesh(meshData);
 
+		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
+
+			ke::RenderCommand::Clear(ClearCommand::Color | ClearCommand::Depth);
+
+			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 
 			window.swapBuffers();
 		}
