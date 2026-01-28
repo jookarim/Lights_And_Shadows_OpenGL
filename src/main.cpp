@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Mesh.h"
 #include "RenderCommand.h"
+#include "Shader.h"
 
 int main()
 {
@@ -13,7 +14,7 @@ int main()
 			.title = "Window"
 		};
 
-		ke::Window window(std::move(windowDesc), {});
+		ke::Window window(windowDesc, {});
 
 		ke::MeshData meshData{
 			.vertices = {
@@ -31,11 +32,20 @@ int main()
 
 		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
 
+		ke::Shader shader(
+			{
+				"assets/shaders/shader.vert",
+				"assets/shaders/shader.frag" 
+			}
+		);
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
 
-			ke::RenderCommand::Clear(ClearCommand::Color | ClearCommand::Depth);
+			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
+
+			shader.bind();
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 

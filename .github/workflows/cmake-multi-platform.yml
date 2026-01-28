@@ -1,0 +1,75 @@
+name: CMake on multiple platforms
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    # ---------------- Checkout ----------------
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # ---------------- Install build tools (Linux) ----------------
+    - name: Install build tools (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+        ninja-build \
+        autoconf \
+        autoconf-archive \
+        automake \
+        libtool \
+        libltdl-dev \
+        pkg-config \
+        libgl1-mesa-dev \
+        mesa-common-dev \
+        libglu1-mesa-dev \
+        xorg-dev
+
+    # ---------------- Install build tools (macOS) ----------------
+    - name: Install build tools (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew update
+        brew install ninja autoconf automake libtool pkg-config
+
+    # ---------------- Clone vcpkg ----------------
+    - name: Clone vcpkg
+      run: git clone https://github.com/microsoft/vcpkg.git
+
+    # ---------------- Bootstrap vcpkg (Linux) ----------------
+    - name: Bootstrap vcpkg (Linux)
+      if: runner.os == 'Linux'
+      run: ./vcpkg/bootstrap-vcpkg.sh
+
+    # ---------------- Bootstrap vcpkg (Windows) ----------------
+    - name: Bootstrap vcpkg (Windows)
+      if: runner.os == 'Windows'
+      run: .\vcpkg\bootstrap-vcpkg.bat
+
+    # ---------------- Configure CMake ----------------
+    - name: Configure CMake
+      run: >
+        cmake -S .
+        -B build
+        -G Ninja
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+    # ---------------- Build ----------------
+    - name: Build
+      run: cmake --build build --config Release

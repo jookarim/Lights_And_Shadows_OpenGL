@@ -1,36 +1,39 @@
 #include <GL/glew.h>
 #include <cstdint>
 
-enum class ClearCommand : uint32_t
+namespace ke
 {
-	None = 0,
-	Color = 1 << 0,
-	Depth = 1 << 1
-};
+	enum class ClearCommand : uint32_t
+	{
+		None = 0,
+		Color = 1 << 0,
+		Depth = 1 << 1
+	};
+}
 
-inline ClearCommand operator|(ClearCommand a, ClearCommand b)
+inline ke::ClearCommand operator|(ke::ClearCommand a, ke::ClearCommand b)
 {
-	return static_cast<ClearCommand>(
+	return static_cast<ke::ClearCommand>(
 		static_cast<uint32_t>(a) |
 		static_cast<uint32_t>(b)
 		);
 }
 
-inline ClearCommand operator&(ClearCommand a, ClearCommand b)
+inline ke::ClearCommand operator&(ke::ClearCommand a, ke::ClearCommand b)
 {
-	return static_cast<ClearCommand>(
+	return static_cast<ke::ClearCommand>(
 		static_cast<uint32_t>(a) &
 		static_cast<uint32_t>(b)
 		);
 }
 
-inline ClearCommand& operator|=(ClearCommand& a, ClearCommand b)
+inline ke::ClearCommand& operator|=(ke::ClearCommand& a, ke::ClearCommand b)
 {
 	a = a | b;
 	return a;
 }
 
-inline ClearCommand& operator&=(ClearCommand& a, ClearCommand b)
+inline ke::ClearCommand& operator&=(ke::ClearCommand& a, ke::ClearCommand b)
 {
 	a = a & b;
 	return a;
