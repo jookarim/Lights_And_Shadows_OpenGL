@@ -10,6 +10,7 @@ namespace ke
 
 		if (!glfwInit())
 		{
+			glfwTerminate();
 			throw std::runtime_error("Failed to init glfw");
 		}
 
@@ -21,6 +22,7 @@ namespace ke
 
 		if (!m_handle)
 		{
+			glfwTerminate();
 			throw std::runtime_error("Failed to create window");
 		}
 
@@ -30,6 +32,7 @@ namespace ke
 
 		if (glewInit() != GLEW_OK)
 		{
+			destroyWindow();
 			throw std::runtime_error("Failed to create opengl context");
 		}
 	}
@@ -51,6 +54,7 @@ namespace ke
 	Window::~Window() noexcept
 	{
 		destroyWindow();
+		glfwTerminate();
 	}
 
 	bool Window::shouldClose() const noexcept
