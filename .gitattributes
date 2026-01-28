@@ -1,0 +1,24 @@
+# Auto detect text files
+* text=auto
+
+# Force LF for source code (SDL, ImGui, your code)
+*.c   text eol=lf
+*.cpp text eol=lf
+*.h   text eol=lf
+*.hpp text eol=lf
+*.inl text eol=lf
+*.mm  text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# Windows scripts
+*.bat text eol=crlf
+
+# Binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.wav binary
+*.mp3 binary
+*.ttf binary
+*.otf binary

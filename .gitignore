@@ -1,3 +1,4 @@
+
 # Prerequisites
 *.d
 
@@ -20,7 +21,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+
 
 # Fortran module files
 *.mod
@@ -30,7 +31,7 @@
 *.lai
 *.la
 *.a
-*.lib
+
 
 # Executables
 *.exe
@@ -39,3 +40,19 @@
 
 # debug information files
 *.dwo
+=======
+# Build folders
+build/
+out/
+
+# Visual Studio
+.vs/
+*.vcxproj*
+*.sln
+
+# Executables
+*.exe
+
+# OS files
+.DS_Store
+
