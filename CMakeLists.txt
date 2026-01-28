@@ -26,7 +26,9 @@ target_include_directories(imgui PUBLIC
 add_executable(Lights_And_Shadows_OpenGL
     src/main.cpp
     src/stb_image.cpp 
-)
+    src/Window.cpp
+    
+ )
 
 target_include_directories(Lights_And_Shadows_OpenGL PRIVATE
     include
