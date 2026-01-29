@@ -40,7 +40,7 @@ int main()
 
 		ke::Shader shader(shaderDesc);
 
-		ke::Texture texture("D:/Dev/Lights_And_Shadows_OpenGL/assets/images/brick.png");
+		ke::Texture texture("assets/images/brick.png");
 
 		while (!window.shouldClose())
 		{
