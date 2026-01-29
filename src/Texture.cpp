@@ -69,4 +69,19 @@ namespace ke
 	{
 		glBindTextureUnit(bindingPoint, m_id);
 	}
+
+	Texture::Texture(Texture&& other) noexcept
+	{
+		m_id = other.m_id;
+		other.m_id = 0;
+	}
+
+	Texture& Texture::operator=(Texture&& other) noexcept
+	{
+		if (this == &other) return *this;
+		destroyTexture();
+		m_id = other.m_id;
+		other.m_id = 0;
+		return *this;
+	}
 }

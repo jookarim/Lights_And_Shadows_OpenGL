@@ -35,7 +35,7 @@ namespace ke
 
 		if (!file.good())
 		{
-			throw std::runtime_error("Failed to open file");
+			throw std::runtime_error("Failed to open file" + std::string(path));
 		}
 
 		std::stringstream ss;

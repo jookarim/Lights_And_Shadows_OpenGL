@@ -4,6 +4,7 @@
 #include "RenderCommand.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "AssetManager.h"
 
 int main()
 {
@@ -38,9 +39,10 @@ int main()
 			.fragPath = "assets/shaders/shader.frag"
 		};
 
-		ke::Shader shader(shaderDesc);
+		auto& assetManager = ke::AssetManager::getInstance();
 
-		ke::Texture texture("assets/images/brick.png");
+		auto shader = assetManager.loadShader("shader", shaderDesc);
+		auto texture = assetManager.loadTexture("texture", "assets/images/brick.png");
 
 		while (!window.shouldClose())
 		{
@@ -48,10 +50,10 @@ int main()
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
-			shader.bind();
+			shader->bind();
 
-			texture.bind(0);
-			shader.setUniformInt("albedo", 0);
+			texture->bind(0);
+			shader->setUniformInt("albedo", 0);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 
