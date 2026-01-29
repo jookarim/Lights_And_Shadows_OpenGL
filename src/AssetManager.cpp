@@ -10,7 +10,7 @@ namespace ke
 		if (it != m_textures.end())
 			return it->second.get();
 
-		auto texture = std::make_unique<Texture>(path);
+		auto texture = std::unique_ptr<Texture>(new Texture(path));
 		Texture* raw = texture.get();       
 
 		m_textures.emplace(key, std::move(texture));
@@ -46,7 +46,7 @@ namespace ke
 			return m_shaders[key].get();
 		}
 
-		auto shader = std::make_unique<Shader>(desc);
+		auto shader = std::unique_ptr<Shader>(new Shader(desc));
 
 		m_shaders[key] = std::move(shader);
 

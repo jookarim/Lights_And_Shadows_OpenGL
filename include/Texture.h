@@ -10,15 +10,21 @@
 
 namespace ke
 {	
+	class AssetManager;
+
 	class Texture
 	{
 	private:
+		friend class AssetManager;
+
 		GLuint m_id{};
-		
+	private:
+		Texture(std::string_view path);
+
 		void loadFromFile(std::string_view path);
 		void destroyTexture() noexcept;
 	public:
-		Texture(std::string_view path);
+		
 		~Texture() noexcept;
 
 		void bind(uint32_t bindingPoint) const;

@@ -17,9 +17,15 @@ namespace ke
 		std::string fragPath = "";
 	};
 
+	class AssetManager;
+
 	class Shader
 	{
 	private:
+		friend class AssetManager;
+
+		Shader(const ShaderDesc& desc);
+
 		std::string loadFromFile(std::string_view path);
 
 		GLuint createShader(std::string_view code, GLenum type);
@@ -32,7 +38,6 @@ namespace ke
 
 		GLint getLocation(std::string_view name);
 	public:
-		Shader(const ShaderDesc& desc);
 		~Shader() noexcept;
 
 		void bind() const;
