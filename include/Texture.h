@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "stb/stb_image.h"
 #include <stdexcept>
+#include <cmath>
 
 namespace ke
 {	
