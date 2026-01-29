@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "RenderCommand.h"
 #include "Shader.h"
+#include "Texture.h"
 
 int main()
 {
@@ -32,12 +33,14 @@ int main()
 
 		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
 
-		ke::Shader shader(
-			{
-				"assets/shaders/shader.vert",
-				"assets/shaders/shader.frag" 
-			}
-		);
+		ke::ShaderDesc shaderDesc{
+			.vertPath = "assets/shaders/shader.vert",
+			.fragPath = "assets/shaders/shader.frag"
+		};
+
+		ke::Shader shader(shaderDesc);
+
+		ke::Texture texture("D:/Dev/Lights_And_Shadows_OpenGL/assets/images/brick.png");
 
 		while (!window.shouldClose())
 		{
@@ -46,6 +49,9 @@ int main()
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
 			shader.bind();
+
+			texture.bind(0);
+			shader.setUniformInt("albedo", 0);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 

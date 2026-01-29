@@ -172,4 +172,11 @@ namespace ke
 
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
+
+	void Shader::setUniformInt(std::string_view name, int value)
+	{
+		GLint location = getLocation(name);
+
+		glUniform1i(location, value);
+	}
 }
