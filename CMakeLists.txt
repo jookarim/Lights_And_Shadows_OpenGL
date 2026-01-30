@@ -49,7 +49,7 @@ add_executable(Lights_And_Shadows_OpenGL
     src/Texture.cpp
     src/AssetManager.cpp
     src/Transform.cpp
-)
+ "src/Camera.cpp" )
 
 target_include_directories(Lights_And_Shadows_OpenGL PRIVATE
     include
