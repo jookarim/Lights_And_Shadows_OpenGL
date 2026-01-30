@@ -84,7 +84,6 @@ int main()
 			);
 
 			texture->bind(ke::TextureSlot::Albedo);
-			shader->setUniformTexture("albedo", ke::TextureSlot::Albedo);
 			
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 

@@ -46,8 +46,6 @@ namespace ke
 		void setUniformMatrix4(std::string_view name, const glm::mat4& value);
 		void setUniformInt(std::string_view name, int value);
 		
-		void setUniformTexture(std::string_view name, TextureSlot slot);
-
 		Shader(const Shader&) = delete;
 		Shader& operator=(const Shader&) = delete;
 

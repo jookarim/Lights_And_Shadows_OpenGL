@@ -179,9 +179,4 @@ namespace ke
 
 		glUniform1i(location, value);
 	}
-
-	void Shader::setUniformTexture(std::string_view name, ke::TextureSlot slot)
-	{
-		setUniformInt(name, static_cast<int>(slot));
-	}
 }

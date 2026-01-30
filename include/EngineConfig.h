@@ -13,7 +13,7 @@ namespace ke
 
 	enum class TextureSlot : uint32_t
 	{
-		Albedo = 0
+		Albedo = 1
 	};
 
 	struct CameraDefaults
