@@ -8,15 +8,16 @@
 #include "Transform.h"
 #include "Camera.h"
 #include "RenderState.h"
+#include "EngineConfig.h"
 
 int main()
 {
 	try
 	{
 		ke::WindowDesc windowDesc{};
-		windowDesc.width = 1270;
-		windowDesc.height = 720;
-		windowDesc.title = "Window";
+		windowDesc.width = ke::AppConfig::WindowWidth;
+		windowDesc.height = ke::AppConfig::WindowHeight;
+		windowDesc.title = ke::AppConfig::WindowTitle;
 
 		ke::Window window(windowDesc, {});
 
@@ -60,13 +61,12 @@ int main()
 
 		ke::Camera camera{};
 
-		camera.near = 1.f;
-		camera.far = 1000.f;
+		camera.near = ke::CameraDefaults::Near;
+		camera.far = ke::CameraDefaults::Far;
 		camera.position = { 0.f, 0.f, 10.f };
 		camera.forward = { 0.f, 0.f, -1.f };
 		camera.up = { 0.f, 1.f, 0.f };
-		camera.fov = 45.f;
-
+		camera.fov = ke::CameraDefaults::Fov;
 
 		while (!window.shouldClose())
 		{
@@ -83,8 +83,8 @@ int main()
 				transform.getModelMatrix()
 			);
 
-			texture->bind(0);
-			shader->setUniformInt("albedo", 0);
+			texture->bind(ke::TextureSlot::Albedo);
+			shader->setUniformTexture("albedo", ke::TextureSlot::Albedo);
 			
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 

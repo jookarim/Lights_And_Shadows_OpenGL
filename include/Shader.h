@@ -8,6 +8,7 @@
 #include <sstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "EngineConfig.h"
 
 namespace ke
 {
@@ -44,6 +45,8 @@ namespace ke
 
 		void setUniformMatrix4(std::string_view name, const glm::mat4& value);
 		void setUniformInt(std::string_view name, int value);
+		
+		void setUniformTexture(std::string_view name, TextureSlot slot);
 
 		Shader(const Shader&) = delete;
 		Shader& operator=(const Shader&) = delete;

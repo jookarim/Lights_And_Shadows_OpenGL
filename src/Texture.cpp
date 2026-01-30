@@ -65,9 +65,9 @@ namespace ke
 		loadFromFile(path);
 	}
 
-	void Texture::bind(uint32_t bindingPoint) const
+	void Texture::bind(ke::TextureSlot bindingPoint) const
 	{
-		glBindTextureUnit(bindingPoint, m_id);
+		glBindTextureUnit(static_cast<uint32_t>(bindingPoint), m_id);
 	}
 
 	Texture::Texture(Texture&& other) noexcept

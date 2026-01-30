@@ -7,6 +7,7 @@
 #include "stb/stb_image.h"
 #include <stdexcept>
 #include <cmath>
+#include "EngineConfig.h"
 
 namespace ke
 {	
@@ -27,7 +28,7 @@ namespace ke
 		
 		~Texture() noexcept;
 
-		void bind(uint32_t bindingPoint) const;
+		void bind(ke::TextureSlot bindingPoint) const;
 
 		GLuint getID() const { return m_id; }
 
