@@ -7,10 +7,12 @@ layout(location = 2) in vec3 aNormal;
 out vec2 texCoords;
 out vec3 normal;
 
+uniform mat4 u_Model;
+
 void main()
 {
 	texCoords = aTexCoords;
 	normal = aNormal;
 
-	gl_Position = vec4(aPos, 1.0);
+	gl_Position = u_Model * vec4(aPos, 1.0);
 }

@@ -45,7 +45,11 @@ add_executable(Lights_And_Shadows_OpenGL
     src/Mesh.cpp
     src/RenderCommand.cpp
     src/Window.cpp
- "src/Shader.cpp"  "src/Texture.cpp" "src/AssetManager.cpp")
+    src/Shader.cpp
+    src/Texture.cpp
+    src/AssetManager.cpp
+    src/Transform.cpp
+)
 
 target_include_directories(Lights_And_Shadows_OpenGL PRIVATE
     include

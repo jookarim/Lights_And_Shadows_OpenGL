@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "AssetManager.h"
+#include "Transform.h"
 
 int main()
 {
@@ -44,6 +45,12 @@ int main()
 		auto shader = assetManager.loadShader("shader", shaderDesc);
 		auto texture = assetManager.loadTexture("texture", "assets/images/brick.png");
 
+		ke::Transform transform{
+			.position{0.f, 1.f, 0.f},
+			.rotation{0.f, 0.f, 45.f},
+			.scale{0.5f}
+		};
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
@@ -52,9 +59,11 @@ int main()
 
 			shader->bind();
 
+			shader->setUniformMatrix4("u_Model", transform.getModelMatrix());
+
 			texture->bind(0);
 			shader->setUniformInt("albedo", 0);
-
+			
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 
 			window.swapBuffers();
