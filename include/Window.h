@@ -46,5 +46,11 @@ namespace ke
 
 		void swapBuffers() const noexcept;
 		void pollEvents() const noexcept;
+
+		const WindowDesc& getWindowDesc() const { return m_wndDesc; }
+		const ContextDesc& getContextDesc() const { return m_ctxDesc; }
+
+		int getWidth() const { return m_wndDesc.width; }
+		int getHeight() const { return m_wndDesc.height; }
 	};
 }

@@ -35,6 +35,8 @@ namespace ke
 			destroyWindow();
 			throw std::runtime_error("Failed to create opengl context");
 		}
+
+		glViewport(0, 0, m_wndDesc.width, m_wndDesc.height);
 	}
 
 	void Window::destroyWindow() noexcept

@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <cstdint>
+#include "RenderState.h"
 
 namespace ke
 {
@@ -50,5 +51,15 @@ namespace ke
 		static void DrawIndexed(GLuint vao, uint32_t indexCount);
 		static void Clear(ClearCommand cmd);
 		static void ClearColor(float r, float g, float b, float a);
+
+		static void ApplyRenderState(const RenderState& renderState);
+
+		RenderCommand(const RenderCommand&) = delete;
+		RenderCommand& operator=(const RenderCommand&) = delete;
+
+		RenderCommand(RenderCommand&&) = delete;
+		RenderCommand& operator=(RenderCommand&&) = delete;
+
+		
 	};
 }

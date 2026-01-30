@@ -6,50 +6,67 @@
 #include "Texture.h"
 #include "AssetManager.h"
 #include "Transform.h"
+#include "Camera.h"
+#include "RenderState.h"
 
 int main()
 {
 	try
 	{
-		ke::WindowDesc windowDesc {
-			.width = 1270,
-			.height = 720,
-			.title = "Window"
-		};
+		ke::WindowDesc windowDesc{};
+		windowDesc.width = 1270;
+		windowDesc.height = 720;
+		windowDesc.title = "Window";
 
 		ke::Window window(windowDesc, {});
 
-		ke::MeshData meshData{
-			.vertices = {
+		ke::MeshData meshData{};
+
+		meshData.vertices = {
 				{{0.f, 1.f, 0.f}, {0.f, 1.f}, {0.f, 0.f, 1.f}},
 				{{1.f, -1.f, 0.f}, {1.f, 0.f}, {0.f, 0.f, 1.f}},
 				{{-1.f, -1.f, 0.f}, {0.f, 0.f}, {0.f, 0.f, 1.f}}
-			},
+		};
 
-			.indices = {
+		meshData.indices = {
 				0,1,2
-			}
 		};
 
 		ke::Mesh mesh(meshData);
 
 		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
 
-		ke::ShaderDesc shaderDesc{
-			.vertPath = "assets/shaders/shader.vert",
-			.fragPath = "assets/shaders/shader.frag"
-		};
+		ke::ShaderDesc shaderDesc{};
+		shaderDesc.vertPath = "assets/shaders/shader.vert";
+		shaderDesc.fragPath = "assets/shaders/shader.frag";
+
+		ke::RenderState renderState{};
+		renderState.cullEnabled = false;
+		renderState.depthFunc = ke::DepthFunc::Less;
+		renderState.depthTest = true;
+		renderState.depthWrite = true;
+
+		ke::RenderCommand::ApplyRenderState(renderState);
 
 		auto& assetManager = ke::AssetManager::getInstance();
 
 		auto shader = assetManager.loadShader("shader", shaderDesc);
 		auto texture = assetManager.loadTexture("texture", "assets/images/brick.png");
 
-		ke::Transform transform{
-			.position{0.f, 1.f, 0.f},
-			.rotation{0.f, 0.f, 45.f},
-			.scale{0.5f}
-		};
+		ke::Transform transform{};
+		transform.position = { 0.f, 1.f, 0.f };
+		transform.scale = { 0.5f, 0.5f, 0.5f };
+		transform.rotation = { 0.f, 0.f, 45.f };
+
+		ke::Camera camera{};
+
+		camera.near = 1.f;
+		camera.far = 1000.f;
+		camera.position = { 0.f, 0.f, 10.f };
+		camera.forward = { 0.f, 0.f, -1.f };
+		camera.up = { 0.f, 1.f, 0.f };
+		camera.fov = 45.f;
+
 
 		while (!window.shouldClose())
 		{
@@ -58,8 +75,13 @@ int main()
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
 			shader->bind();
-
-			shader->setUniformMatrix4("u_Model", transform.getModelMatrix());
+		
+			shader->setUniformMatrix4(
+				"u_MVP", 
+				camera.getProjectionMatrix(window.getWidth(), window.getHeight()) *
+				camera.getViewMatrix() * 
+				transform.getModelMatrix()
+			);
 
 			texture->bind(0);
 			shader->setUniformInt("albedo", 0);
