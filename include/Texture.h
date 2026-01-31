@@ -13,6 +13,38 @@ namespace ke
 {	
 	class AssetManager;
 
+	enum class TextureFormat
+	{
+		R8,
+		RGB8,
+		RGBA8,
+		Depth24,
+		Depth32
+	};
+
+	enum class TextureWrap
+	{
+		Repeat,
+		ClampToEdge
+	};
+
+	enum TextureFilter
+	{
+		Linear,
+		Nearest
+	};
+
+	struct TextureDesc
+	{
+		int width, height;
+		TextureFormat format;
+		TextureWrap wrapS = TextureWrap::Repeat;
+		TextureWrap wrapT = TextureWrap::Repeat;
+		TextureFilter minFilter = TextureFilter::Nearest;
+		TextureFilter magFilter = TextureFilter::Nearest;
+		void* data = nullptr;
+	};
+
 	class Texture
 	{
 	private:
@@ -21,9 +53,12 @@ namespace ke
 		GLuint m_id{};
 	private:
 		Texture(std::string_view path);
+		Texture(const TextureDesc& desc);
 
 		void loadFromFile(std::string_view path);
 		void destroyTexture() noexcept;
+
+		void createTexture(const TextureDesc& desc);
 	public:
 		
 		~Texture() noexcept;

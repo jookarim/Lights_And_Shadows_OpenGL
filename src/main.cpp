@@ -67,6 +67,19 @@ int main()
 		camera.forward = { 0.f, 0.f, -1.f };
 		camera.up = { 0.f, 1.f, 0.f };
 		camera.fov = ke::CameraDefaults::Fov;
+		
+		ke::TextureDesc textureDesc;
+
+		textureDesc.format = ke::TextureFormat::RGB8;
+		textureDesc.width = window.getWidth();
+		textureDesc.height = window.getHeight();
+		textureDesc.magFilter = ke::TextureFilter::Nearest;
+		textureDesc.minFilter = ke::TextureFilter::Nearest;
+		textureDesc.wrapS = ke::TextureWrap::Repeat;
+		textureDesc.wrapT = ke::TextureWrap::Repeat;
+		textureDesc.data = nullptr;
+
+		auto proceduralTexture = assetManager.createTexture("procedural_texture", textureDesc);
 
 		while (!window.shouldClose())
 		{

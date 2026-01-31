@@ -17,6 +17,21 @@ namespace ke
 		return raw;
 	}
 
+	Texture* AssetManager::createTexture(std::string_view name, const TextureDesc& desc)
+	{
+		std::string key{ name };
+
+		auto it = m_textures.find(key);
+		if (it != m_textures.end())
+			return it->second.get();
+
+		auto texture = std::unique_ptr<Texture>(new Texture(desc));
+		Texture* raw = texture.get();
+
+		m_textures.emplace(key, std::move(texture));
+		return raw;
+	}
+
 	void AssetManager::destroyTexture(std::string_view name) noexcept
 	{
 		auto key = std::string(name);
