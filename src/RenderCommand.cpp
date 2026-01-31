@@ -91,4 +91,16 @@ namespace ke
             glCullFace(GL_FRONT);
         }
     }
+
+    void RenderCommand::BindDefaultFramebuffer()
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void RenderCommand::DrawFullscreenQuad()
+    {
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
 }
+
+

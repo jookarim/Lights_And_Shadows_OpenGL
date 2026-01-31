@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "RenderState.h"
 #include "EngineConfig.h"
+#include "RenderTarget.h"
 
 int main()
 {
@@ -67,8 +68,8 @@ int main()
 		camera.forward = { 0.f, 0.f, -1.f };
 		camera.up = { 0.f, 1.f, 0.f };
 		camera.fov = ke::CameraDefaults::Fov;
-		
-		ke::TextureDesc textureDesc;
+
+		ke::TextureDesc textureDesc{};
 
 		textureDesc.format = ke::TextureFormat::RGB8;
 		textureDesc.width = window.getWidth();
@@ -81,28 +82,54 @@ int main()
 
 		auto proceduralTexture = assetManager.createTexture("procedural_texture", textureDesc);
 
+		ke::RenderTargetDesc fboDesc{};
+		fboDesc.width = window.getWidth();
+		fboDesc.height = window.getHeight();
+		fboDesc.colorAttachments = { proceduralTexture };
+
+		ke::RenderTarget renderTarget;
+		renderTarget.attachData(fboDesc);
+
+		ke::ShaderDesc grayShaderDesc{};
+		grayShaderDesc.vertPath = "assets/shaders/fullscreen.vert";
+		grayShaderDesc.fragPath = "assets/shaders/fullscreen.frag";
+
+		auto grayScaleShader = assetManager.loadShader("grayscale_shader", grayShaderDesc);
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
 
+			renderTarget.bind();
+
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
 			shader->bind();
-		
+
 			shader->setUniformMatrix4(
-				"u_MVP", 
+				"u_MVP",
 				camera.getProjectionMatrix(window.getWidth(), window.getHeight()) *
-				camera.getViewMatrix() * 
+				camera.getViewMatrix() *
 				transform.getModelMatrix()
 			);
 
 			texture->bind(ke::TextureSlot::Albedo);
-			
-			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
+
+			ke::RenderCommand::DrawIndexed(mesh.getVAO(),mesh.getIndexCount());
+
+			ke::RenderCommand::BindDefaultFramebuffer();
+
+			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
+
+			grayScaleShader->bind();
+
+			proceduralTexture->bind(ke::TextureSlot::Albedo);
+
+			ke::RenderCommand::DrawFullscreenQuad();
 
 			window.swapBuffers();
 		}
-	} 
+	}
 	
 	catch (const std::exception& e)
 	{

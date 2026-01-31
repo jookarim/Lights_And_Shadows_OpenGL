@@ -54,6 +54,9 @@ namespace ke
 
 		static void ApplyRenderState(const RenderState& renderState);
 
+		static void BindDefaultFramebuffer();
+		static void DrawFullscreenQuad();
+
 		RenderCommand(const RenderCommand&) = delete;
 		RenderCommand& operator=(const RenderCommand&) = delete;
 

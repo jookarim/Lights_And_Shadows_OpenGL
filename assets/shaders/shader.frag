@@ -5,7 +5,7 @@ in vec3 normal;
 
 out vec4 fragColor;
 
-layout(binding = 1) uniform sampler2D albedo;
+layout(binding = 0) uniform sampler2D albedo;
 
 void main()
 {
