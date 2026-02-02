@@ -2,15 +2,15 @@
 
 namespace ke
 {
-	void Texture::loadFromFile(std::string_view path)
+	void Texture::loadFromFile(const LoadTextureDesc& desc)
 	{
 		int width, height, nrChannels;
 
 		stbi_set_flip_vertically_on_load(true);
 
-		stbi_uc* data = stbi_load(path.data(), &width, &height, &nrChannels, 0);
+		stbi_uc* data = stbi_load(desc.path.data(), &width, &height, &nrChannels, 0);
 
-		if (!data) throw std::runtime_error("Failed to load texture: " + std::string(path));
+		if (!data) throw std::runtime_error("Failed to load texture: " + std::string(desc.path));
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
 	
@@ -38,10 +38,44 @@ namespace ke
 		glTextureStorage2D(m_id, 1, internalFormat, width, height);
 		glTextureSubImage2D(m_id, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
 
-		glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		GLenum minFilter;
+		GLenum magFilter;
+		GLenum wrapS;
+		GLenum wrapT;
+
+		if (desc.minFilter == TextureFilter::Linear)
+			minFilter = GL_LINEAR;
+		else if (desc.minFilter == TextureFilter::Nearest)
+			minFilter = GL_NEAREST;
+
+		if (desc.magFilter == TextureFilter::Linear)
+			magFilter = GL_LINEAR;
+		else if (desc.magFilter == TextureFilter::Nearest)
+			magFilter = GL_NEAREST;
+
+		if (desc.wrapS == TextureWrap::Repeat)
+		{
+			wrapS = GL_REPEAT;
+		}
+
+		else if (desc.wrapS == TextureWrap::ClampToEdge)
+		{
+			wrapS = GL_CLAMP_TO_EDGE;
+		}
+
+		if (desc.wrapT == TextureWrap::Repeat)
+		{
+			wrapT = GL_REPEAT;
+		}
+
+		else if (desc.wrapT == TextureWrap::ClampToEdge)
+		{
+			wrapT = GL_CLAMP_TO_EDGE;
+		}
+		glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, minFilter);
+		glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, magFilter);
+		glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, wrapT);
+		glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, wrapS);
 
 		stbi_image_free(data);
 	}
@@ -60,9 +94,9 @@ namespace ke
 		destroyTexture();
 	}
 
-	Texture::Texture(std::string_view path)
+	Texture::Texture(const LoadTextureDesc& desc)
 	{
-		loadFromFile(path);
+		loadFromFile(desc);
 	}
 
 	void Texture::bind(ke::TextureSlot bindingPoint) const

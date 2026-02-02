@@ -179,4 +179,11 @@ namespace ke
 
 		glUniform1i(location, value);
 	}
+
+	void Shader::setUniformVec3(std::string_view name, const glm::vec3& value)
+	{
+		GLint location = getLocation(name);
+
+		glUniform3f(location, value.x, value.y, value.z);
+	}
 }

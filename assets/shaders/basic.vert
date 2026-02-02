@@ -8,17 +8,11 @@ out vec2 texCoords;
 out vec3 normal;
 
 uniform mat4 u_MVP;
-uniform mat4 u_Model;
-
-out vec4 worldPos;
 
 void main()
 {
 	texCoords = aTexCoords;
-
-	normal = mat3(transpose(inverse(u_Model))) * aNormal;
-
-	worldPos = u_Model * worldPos;
+	normal = aNormal;
 
 	gl_Position = u_MVP * vec4(aPos, 1.0);
 }

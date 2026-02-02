@@ -2,7 +2,7 @@
 
 namespace ke
 {
-	Texture* AssetManager::loadTexture(std::string_view name, std::string_view path)
+	Texture* AssetManager::loadTexture(std::string_view name, const LoadTextureDesc& desc)
 	{
 		std::string key{ name };
 
@@ -10,7 +10,7 @@ namespace ke
 		if (it != m_textures.end())
 			return it->second.get();
 
-		auto texture = std::unique_ptr<Texture>(new Texture(path));
+		auto texture = std::unique_ptr<Texture>(new Texture(desc));
 		Texture* raw = texture.get();       
 
 		m_textures.emplace(key, std::move(texture));

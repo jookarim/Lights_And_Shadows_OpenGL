@@ -45,6 +45,15 @@ namespace ke
 		void* data = nullptr;
 	};
 
+	struct LoadTextureDesc
+	{
+		std::string path;
+		TextureFilter minFilter = TextureFilter::Linear;
+		TextureFilter magFilter = TextureFilter::Nearest;
+		TextureWrap wrapS = TextureWrap::Repeat;
+		TextureWrap wrapT = TextureWrap::Repeat;
+	};
+
 	class Texture
 	{
 	private:
@@ -52,10 +61,10 @@ namespace ke
 
 		GLuint m_id{};
 	private:
-		Texture(std::string_view path);
+		Texture(const LoadTextureDesc& desc);
 		Texture(const TextureDesc& desc);
 
-		void loadFromFile(std::string_view path);
+		void loadFromFile(const LoadTextureDesc& desc);
 		void destroyTexture() noexcept;
 
 		void createTexture(const TextureDesc& desc);

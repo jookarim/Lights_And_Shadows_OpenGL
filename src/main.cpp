@@ -10,6 +10,8 @@
 #include "RenderState.h"
 #include "EngineConfig.h"
 #include "RenderTarget.h"
+#include "ShaderStorageBuffer.h"
+#include "Lights.h"
 
 int main()
 {
@@ -25,22 +27,20 @@ int main()
 		ke::MeshData meshData{};
 
 		meshData.vertices = {
-				{{0.f, 1.f, 0.f}, {0.f, 1.f}, {0.f, 0.f, 1.f}},
-				{{1.f, -1.f, 0.f}, {1.f, 0.f}, {0.f, 0.f, 1.f}},
-				{{-1.f, -1.f, 0.f}, {0.f, 0.f}, {0.f, 0.f, 1.f}}
+			{{-5.f, 0.f, -5.f}, {0.f, 0.f}, {0.f, 1.f, 0.f}},
+			{{ 5.f, 0.f, -5.f}, {1.f, 0.f}, {0.f, 1.f, 0.f}}, 
+			{{ 5.f, 0.f,  5.f}, {1.f, 1.f}, {0.f, 1.f, 0.f}}, 
+			{{-5.f, 0.f,  5.f}, {0.f, 1.f}, {0.f, 1.f, 0.f}}  
 		};
 
 		meshData.indices = {
-				0,1,2
+			0, 1, 2,
+			2, 3, 0
 		};
 
 		ke::Mesh mesh(meshData);
 
 		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
-
-		ke::ShaderDesc shaderDesc{};
-		shaderDesc.vertPath = "assets/shaders/shader.vert";
-		shaderDesc.fragPath = "assets/shaders/shader.frag";
 
 		ke::RenderState renderState{};
 		renderState.cullEnabled = false;
@@ -52,35 +52,47 @@ int main()
 
 		auto& assetManager = ke::AssetManager::getInstance();
 
+		ke::ShaderDesc shaderDesc{};
+		shaderDesc.vertPath = "assets/shaders/shader.vert";
+		shaderDesc.fragPath = "assets/shaders/shader.frag";
+
 		auto shader = assetManager.loadShader("shader", shaderDesc);
-		auto texture = assetManager.loadTexture("texture", "assets/images/brick.png");
+
+		ke::LoadTextureDesc textureDesc{};
+		textureDesc.path = "assets/images/bricks2.jpg";
+		textureDesc.magFilter = ke::TextureFilter::Linear;
+		textureDesc.minFilter = ke::TextureFilter::Linear;
+		textureDesc.wrapS = ke::TextureWrap::Repeat;
+		textureDesc.wrapT = ke::TextureWrap::Repeat;
+		
+		auto texture = assetManager.loadTexture("texture", textureDesc);
 
 		ke::Transform transform{};
 		transform.position = { 0.f, 1.f, 0.f };
 		transform.scale = { 0.5f, 0.5f, 0.5f };
-		transform.rotation = { 0.f, 0.f, 45.f };
+		transform.rotation = { 0.f, 0.f, 0.f };
 
 		ke::Camera camera{};
 
 		camera.near = ke::CameraDefaults::Near;
 		camera.far = ke::CameraDefaults::Far;
-		camera.position = { 0.f, 0.f, 10.f };
-		camera.forward = { 0.f, 0.f, -1.f };
+		camera.position = { 0.f, 5.f, 10.f };
+		camera.forward = glm::normalize(glm::vec3(0.f, -0.5f, -1.f));
 		camera.up = { 0.f, 1.f, 0.f };
 		camera.fov = ke::CameraDefaults::Fov;
 
-		ke::TextureDesc textureDesc{};
+		ke::TextureDesc proceduralTextureDesc{};
 
-		textureDesc.format = ke::TextureFormat::RGB8;
-		textureDesc.width = window.getWidth();
-		textureDesc.height = window.getHeight();
-		textureDesc.magFilter = ke::TextureFilter::Nearest;
-		textureDesc.minFilter = ke::TextureFilter::Nearest;
-		textureDesc.wrapS = ke::TextureWrap::Repeat;
-		textureDesc.wrapT = ke::TextureWrap::Repeat;
-		textureDesc.data = nullptr;
+		proceduralTextureDesc.format = ke::TextureFormat::RGB8;
+		proceduralTextureDesc.width = window.getWidth();
+		proceduralTextureDesc.height = window.getHeight();
+		proceduralTextureDesc.magFilter = ke::TextureFilter::Nearest;
+		proceduralTextureDesc.minFilter = ke::TextureFilter::Nearest;
+		proceduralTextureDesc.wrapS = ke::TextureWrap::Repeat;
+		proceduralTextureDesc.wrapT = ke::TextureWrap::Repeat;
+		proceduralTextureDesc.data = nullptr;
 
-		auto proceduralTexture = assetManager.createTexture("procedural_texture", textureDesc);
+		auto proceduralTexture = assetManager.createTexture("procedural_texture", proceduralTextureDesc);
 
 		ke::RenderTargetDesc fboDesc{};
 		fboDesc.width = window.getWidth();
@@ -95,6 +107,18 @@ int main()
 		grayShaderDesc.fragPath = "assets/shaders/fullscreen.frag";
 
 		auto grayScaleShader = assetManager.loadShader("grayscale_shader", grayShaderDesc);
+
+		ke::DirectionalLight dirLight{};
+		dirLight.ambient = glm::vec3(0.2f);
+		dirLight.diffuse = glm::vec3(1.f, 1.f, 1.f);
+		dirLight.specular = glm::vec3(1.f, 1.f, 1.f);
+		dirLight.direction = glm::normalize(glm::vec3(0.4f, -0.6f, 0.3f));
+
+		std::vector<ke::DirectionalLight> dirLights = { dirLight };
+
+		ke::ShaderStorageBuffer storageBuffer(dirLights.size() * sizeof(ke::DirectionalLight), 1);
+
+		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
 
 		while (!window.shouldClose())
 		{
@@ -113,6 +137,10 @@ int main()
 				transform.getModelMatrix()
 			);
 
+			shader->setUniformMatrix4("u_Model", transform.getModelMatrix());
+
+			shader->setUniformVec3("viewPos", camera.position);
+
 			texture->bind(ke::TextureSlot::Albedo);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(),mesh.getIndexCount());
@@ -121,9 +149,9 @@ int main()
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
-			grayScaleShader->bind();
-
 			proceduralTexture->bind(ke::TextureSlot::Albedo);
+
+			grayScaleShader->bind();
 
 			ke::RenderCommand::DrawFullscreenQuad();
 
@@ -135,5 +163,4 @@ int main()
 	{
 		std::cout << e.what();
 	}
-	
 }

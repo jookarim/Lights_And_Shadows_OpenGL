@@ -45,7 +45,8 @@ namespace ke
 
 		void setUniformMatrix4(std::string_view name, const glm::mat4& value);
 		void setUniformInt(std::string_view name, int value);
-		
+		void setUniformVec3(std::string_view name, const glm::vec3& value);
+
 		Shader(const Shader&) = delete;
 		Shader& operator=(const Shader&) = delete;
 

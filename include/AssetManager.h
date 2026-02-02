@@ -18,7 +18,7 @@ namespace ke
 	public:
 		AssetManager() = default;
 
-		Texture* loadTexture(std::string_view name, std::string_view path);
+		Texture* loadTexture(std::string_view name, const LoadTextureDesc& desc);
 		Texture* createTexture(std::string_view name, const TextureDesc& desc);
 
 		void destroyTexture(std::string_view name) noexcept;

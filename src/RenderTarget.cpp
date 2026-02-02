@@ -30,7 +30,7 @@ namespace ke
 
             drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(i));
         }
-        
+
         if (desc.depthAttachment)
         {
             glNamedFramebufferTexture(m_id, GL_DEPTH_ATTACHMENT, desc.depthAttachment->getID(), 0);
@@ -47,6 +47,12 @@ namespace ke
         }
 
         GLenum status = glCheckNamedFramebufferStatus(m_id, GL_FRAMEBUFFER);
+
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            throw std::runtime_error("Failed to create framebuffer");
+        }
+
     }
 
 	RenderTarget::RenderTarget()
