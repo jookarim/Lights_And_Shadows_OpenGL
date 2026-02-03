@@ -17,6 +17,7 @@ namespace ke
 		glfwWindowHint(GLFW_OPENGL_PROFILE, ctxDesc.glProfile);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ctxDesc.majorVersion);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ctxDesc.minorVersion);
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		m_handle = glfwCreateWindow(wndDesc.width, wndDesc.height, wndDesc.title.c_str(), nullptr, nullptr);
 
