@@ -8,6 +8,7 @@ int main()
 		windowDesc.width = ke::AppConfig::WindowWidth;
 		windowDesc.height = ke::AppConfig::WindowHeight;
 		windowDesc.title = ke::AppConfig::WindowTitle;
+		windowDesc.iconPath = ke::AppConfig::WindowIcon;
 
 		ke::Window window(windowDesc, {});
 

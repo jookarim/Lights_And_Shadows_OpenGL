@@ -10,6 +10,7 @@ namespace ke
 		static constexpr int WindowWidth = 1270;
 		static constexpr int WindowHeight = 720;
 		static constexpr const char* WindowTitle = "Window";
+		static constexpr const char* WindowIcon = "assets/images/pharaoh.png";
 	};
 
 	enum class TextureSlot : uint32_t

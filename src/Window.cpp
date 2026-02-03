@@ -37,6 +37,23 @@ namespace ke
 		}
 
 		glViewport(0, 0, m_wndDesc.width, m_wndDesc.height);
+
+		GLFWimage icon;
+
+		int width, height, nrChannels;
+
+		stbi_uc* data = stbi_load(wndDesc.iconPath.c_str(), &width, &height, &nrChannels, 4);
+
+		icon.width = width;
+		icon.height = height;
+		icon.pixels = data;
+
+		if (!data) throw std::runtime_error("Failed to load icon: " + wndDesc.iconPath);
+
+		glfwSetWindowIcon(m_handle, 1, &icon);
+
+		stbi_image_free(data);
+		
 	}
 
 	void Window::destroyWindow() noexcept

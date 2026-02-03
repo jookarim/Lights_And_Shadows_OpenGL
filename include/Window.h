@@ -12,6 +12,7 @@ namespace ke
 	{
 		int width = 800, height = 600;
 		std::string title = "";
+		std::string iconPath = "Default";
 	};
 
 	//Handles opengl context data like version
