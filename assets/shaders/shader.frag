@@ -24,6 +24,7 @@ layout(binding = 1) buffer DirLights
 };
 
 uniform vec3 viewPos;
+uniform int dirLightsCount;
 
 vec3 calculateDirLight(DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3 albedoColor)
 {
@@ -39,7 +40,7 @@ vec3 calculateDirLight(DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3
     vec3 specular = spec * dirLight.specular;
 
     vec3 ambient = dirLight.ambient * albedoColor;
-
+    
     return ambient + diffuse + specular;
 }
 
@@ -48,8 +49,14 @@ void main()
     vec3 albedoColor = texture(albedo, texCoords).rgb;
     vec3 lighting = vec3(0.0);
 
-    lighting += calculateDirLight(dirLights[0], viewPos, normal, albedoColor);
-
+    if (dirLightsCount <= MAX_DIR_LIGHTS)
+    {
+        for (int i = 0; i < dirLightsCount; ++i)
+        {
+            lighting += calculateDirLight(dirLights[0], viewPos, normal, albedoColor);
+        }
+    }
+   
     vec3 color = pow(lighting, vec3(1.0 / 2.2));
     fragColor = vec4(color, 1.0);
 }

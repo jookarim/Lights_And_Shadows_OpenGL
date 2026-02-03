@@ -163,6 +163,8 @@ int main()
 
 			shader->setUniformVec3("viewPos", camera.position);
 
+			shader->setUniformInt("dirLightsCount", static_cast<int>(dirLights.size()));
+
 			texture->bind(ke::TextureSlot::Albedo);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(),mesh.getIndexCount());
