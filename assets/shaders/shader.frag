@@ -13,12 +13,16 @@ layout(binding = 0) uniform sampler2D albedo;
 struct DirectionalLight
 {
     vec3 ambient;
+    float pad0;
     vec3 diffuse;
+    float pad1;
     vec3 specular;
+    float pad2;
     vec3 direction;
+    float pad3;
 };
 
-layout(binding = 1) buffer DirLights
+layout(binding = 1) readonly buffer DirLights
 {
     DirectionalLight dirLights[MAX_DIR_LIGHTS];
 };
@@ -53,7 +57,7 @@ void main()
     {
         for (int i = 0; i < dirLightsCount; ++i)
         {
-            lighting += calculateDirLight(dirLights[0], viewPos, normal, albedoColor);
+            lighting += calculateDirLight(dirLights[i], viewPos, normal, albedoColor);
         }
     }
    

@@ -16,9 +16,9 @@ void main()
 {
 	texCoords = aTexCoords;
 
-	normal = mat3(transpose(inverse(u_Model))) * aNormal;
+	normal = normalize(mat3(transpose(inverse(u_Model))) * aNormal);
 
-	worldPos = u_Model * worldPos;
+	worldPos = u_Model * vec4(aPos, 1.0);
 
 	gl_Position = u_MVP * vec4(aPos, 1.0);
 }

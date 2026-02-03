@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#define MAX_DIR_LIGHTS 16
+
 int main()
 {
 	try
@@ -96,16 +98,24 @@ int main()
 		auto grayScaleShader = assetManager.loadShader("grayscale_shader", grayShaderDesc);
 
 		ke::DirectionalLight dirLight{};
-		dirLight.ambient = glm::vec3(0.2f);
-		dirLight.diffuse = glm::vec3(1.f, 1.f, 1.f);
-		dirLight.specular = glm::vec3(1.f, 1.f, 1.f);
-		dirLight.direction = glm::normalize(glm::vec3(0.4f, -0.6f, 0.3f));
+
+		dirLight.ambient = glm::vec3(0.08f);
+
+		dirLight.diffuse = glm::vec3(0.9f);
+
+		dirLight.specular = glm::vec3(0.25f);
+
+		dirLight.direction = glm::normalize(glm::vec3(
+			-0.3f,   
+			-1.0f,   
+			-0.2f    
+		));
 
 		std::vector<ke::DirectionalLight> dirLights = { dirLight };
 
-		ke::ShaderStorageBuffer storageBuffer(dirLights.size() * sizeof(ke::DirectionalLight), 1);
-
+		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 1);
 		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
+
 
 		ke::SkyboxDesc skyboxDesc;
 		skyboxDesc.minFilter = ke::TextureFilter::Linear;
