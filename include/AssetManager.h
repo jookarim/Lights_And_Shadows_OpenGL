@@ -6,6 +6,7 @@
 #include <string_view>
 #include "Texture.h"
 #include "Shader.h"
+#include "Skybox.h"
 #include <stdexcept>
 
 namespace ke
@@ -15,6 +16,7 @@ namespace ke
 	private:
 		std::unordered_map<std::string, std::unique_ptr<Texture>> m_textures{};
 		std::unordered_map<std::string, std::unique_ptr<Shader>> m_shaders{};
+		std::unordered_map<std::string, std::unique_ptr<Skybox>> m_skyboxes;
 	public:
 		AssetManager() = default;
 
@@ -27,6 +29,10 @@ namespace ke
 		Shader* loadShader(std::string_view name, const ShaderDesc& desc);
 		void destroyShader(std::string_view name) noexcept;
 		Shader* getShader(std::string_view name);
+
+		Skybox* loadSkybox(std::string_view name, const SkyboxDesc& desc);
+		void destroySkybox(std::string_view name);
+		Skybox* getSkybox(std::string_view name);
 
 		AssetManager(const AssetManager&) = delete;
 		AssetManager& operator=(const AssetManager&) = delete;

@@ -1,17 +1,4 @@
-#include <iostream>
-#include "Window.h"
-#include "Mesh.h"
-#include "RenderCommand.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "AssetManager.h"
-#include "Transform.h"
-#include "Camera.h"
-#include "RenderState.h"
-#include "EngineConfig.h"
-#include "RenderTarget.h"
-#include "ShaderStorageBuffer.h"
-#include "Lights.h"
+#include "Engine.h"
 
 int main()
 {
@@ -40,13 +27,12 @@ int main()
 
 		ke::Mesh mesh(meshData);
 
-		ke::RenderCommand::ClearColor(1.f, 1.f, 0.f, 1.f);
-
 		ke::RenderState renderState{};
 		renderState.cullEnabled = false;
 		renderState.depthFunc = ke::DepthFunc::Less;
 		renderState.depthTest = true;
 		renderState.depthWrite = true;
+		renderState.clearColor = { 1.f, 0.f, 0.f, 1.f };
 
 		ke::RenderCommand::ApplyRenderState(renderState);
 
@@ -76,7 +62,7 @@ int main()
 
 		camera.near = ke::CameraDefaults::Near;
 		camera.far = ke::CameraDefaults::Far;
-		camera.position = { 0.f, 5.f, 10.f };
+		camera.position = { 0.f, 20.f, 30.f };
 		camera.forward = glm::normalize(glm::vec3(0.f, -0.5f, -1.f));
 		camera.up = { 0.f, 1.f, 0.f };
 		camera.fov = ke::CameraDefaults::Fov;
@@ -101,7 +87,7 @@ int main()
 
 		ke::RenderTarget renderTarget;
 		renderTarget.attachData(fboDesc);
-
+		
 		ke::ShaderDesc grayShaderDesc{};
 		grayShaderDesc.vertPath = "assets/shaders/fullscreen.vert";
 		grayShaderDesc.fragPath = "assets/shaders/fullscreen.frag";
@@ -120,6 +106,32 @@ int main()
 
 		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
 
+		ke::SkyboxDesc skyboxDesc;
+		skyboxDesc.minFilter = ke::TextureFilter::Linear;
+		skyboxDesc.magFilter = ke::TextureFilter::Linear;
+		skyboxDesc.paths = {
+			"assets/images/skybox/nightRight.png",
+			"assets/images/skybox/nightLeft.png",
+			"assets/images/skybox/nightTop.png",
+			"assets/images/skybox/nightBottom.png",
+			"assets/images/skybox/nightFront.png",
+			"assets/images/skybox/nightBack.png",
+		};
+
+		auto skybox = assetManager.loadSkybox("skybox", skyboxDesc);
+
+		ke::ShaderDesc skyboxShaderDesc;
+		skyboxShaderDesc.vertPath = "assets/shaders/skybox.vert";
+		skyboxShaderDesc.fragPath = "assets/shaders/skybox.frag";
+
+		auto skyboxShader = assetManager.loadShader("skybox_shader", skyboxShaderDesc);
+
+		ke::RenderState skyboxRenderState;
+		skyboxRenderState.depthTest = true;
+		skyboxRenderState.depthWrite = false;
+		skyboxRenderState.cullEnabled = false;
+		skyboxRenderState.depthFunc = ke::DepthFunc::LessEqual;
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
@@ -128,14 +140,23 @@ int main()
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
+			ke::RenderCommand::ApplyRenderState(skyboxRenderState);
+
+			skyboxShader->bind();
+
+			skyboxShader->setUniformMatrix4("u_View", camera.getViewMatrix());
+
+			skyboxShader->setUniformMatrix4("u_Proj", camera.getProjectionMatrix(window.getWidth(), window.getHeight()));
+
+			skybox->bind(ke::TextureSlot::Skybox);
+			
+			ke::RenderCommand::DrawSkybox(skybox->getVAO());
+
+			ke::RenderCommand::ApplyRenderState(renderState);
+
 			shader->bind();
 
-			shader->setUniformMatrix4(
-				"u_MVP",
-				camera.getProjectionMatrix(window.getWidth(), window.getHeight()) *
-				camera.getViewMatrix() *
-				transform.getModelMatrix()
-			);
+			shader->setUniformMatrix4("u_MVP",camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * transform.getModelMatrix());
 
 			shader->setUniformMatrix4("u_Model", transform.getModelMatrix());
 
@@ -149,7 +170,7 @@ int main()
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
-			proceduralTexture->bind(ke::TextureSlot::Albedo);
+			proceduralTexture->bind(ke::TextureSlot::GrayScale);
 
 			grayScaleShader->bind();
 

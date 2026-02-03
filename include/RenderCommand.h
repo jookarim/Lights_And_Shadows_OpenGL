@@ -50,12 +50,13 @@ namespace ke
 	public:
 		static void DrawIndexed(GLuint vao, uint32_t indexCount);
 		static void Clear(ClearCommand cmd);
-		static void ClearColor(float r, float g, float b, float a);
 
 		static void ApplyRenderState(const RenderState& renderState);
 
 		static void BindDefaultFramebuffer();
 		static void DrawFullscreenQuad();
+
+		static void DrawSkybox(GLuint vao);
 
 		RenderCommand(const RenderCommand&) = delete;
 		RenderCommand& operator=(const RenderCommand&) = delete;
@@ -63,6 +64,6 @@ namespace ke
 		RenderCommand(RenderCommand&&) = delete;
 		RenderCommand& operator=(RenderCommand&&) = delete;
 
-		
+			
 	};
 }

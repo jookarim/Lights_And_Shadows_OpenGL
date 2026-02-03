@@ -65,6 +65,21 @@ namespace ke
 		destroyRenderTarget();
 	}
 
+    RenderTarget::RenderTarget(RenderTarget&& other) noexcept
+    {
+        m_id = other.m_id;
+        other.m_id = 0;
+    }
+
+    RenderTarget& RenderTarget::operator=(RenderTarget&& other) noexcept
+    {
+        if (this == &other) return *this;
+        destroyRenderTarget();
+        m_id = other.m_id;
+        other.m_id = 0;
+        return *this;
+    }
+
 	void RenderTarget::bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);

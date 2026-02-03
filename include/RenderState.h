@@ -1,5 +1,7 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 namespace ke
 {
     enum class DepthFunc
@@ -23,5 +25,7 @@ namespace ke
 
         bool cullEnabled = true;
         CullMode cullMode = CullMode::Back;
+
+        glm::vec4 clearColor = { 0.f, 0.f, 0.f, 0.f };
     };
 }

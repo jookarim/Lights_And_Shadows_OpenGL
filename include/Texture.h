@@ -22,18 +22,6 @@ namespace ke
 		Depth32
 	};
 
-	enum class TextureWrap
-	{
-		Repeat,
-		ClampToEdge
-	};
-
-	enum TextureFilter
-	{
-		Linear,
-		Nearest
-	};
-
 	struct TextureDesc
 	{
 		int width, height;

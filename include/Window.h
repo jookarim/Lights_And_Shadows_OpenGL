@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include "stb/stb_image.h"
 
 namespace ke
 {

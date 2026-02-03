@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace ke
 {
@@ -13,7 +14,9 @@ namespace ke
 
 	enum class TextureSlot : uint32_t
 	{
-		Albedo = 0
+		Albedo = 0,
+		GrayScale = 0,
+		Skybox = 0
 	};
 
 	struct CameraDefaults
@@ -21,5 +24,17 @@ namespace ke
 		static constexpr float Fov = 45.f;
 		static constexpr float Near = 1.f;
 		static constexpr float Far = 1000.f;
+	};
+
+	enum class TextureWrap
+	{
+		Repeat,
+		ClampToEdge
+	};
+
+	enum TextureFilter
+	{
+		Linear,
+		Nearest
 	};
 }

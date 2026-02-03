@@ -29,11 +29,6 @@ namespace ke
         }
     }
 
-    void RenderCommand::ClearColor(float r, float g, float b, float a)
-    {
-        glClearColor(r, g, b, a);
-    }
-
     void RenderCommand::ApplyRenderState(const RenderState& renderState)
     {
         if (renderState.depthTest)
@@ -90,6 +85,8 @@ namespace ke
         {
             glCullFace(GL_FRONT);
         }
+
+        glClearColor(static_cast<GLclampf>(renderState.clearColor.x), static_cast<GLclampf>(renderState.clearColor.y), static_cast<GLclampf>(renderState.clearColor.z), static_cast<GLclampf>(renderState.clearColor.w));
     }
 
     void RenderCommand::BindDefaultFramebuffer()
@@ -100,6 +97,12 @@ namespace ke
     void RenderCommand::DrawFullscreenQuad()
     {
         glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    void RenderCommand::DrawSkybox(GLuint vao)
+    {
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
 

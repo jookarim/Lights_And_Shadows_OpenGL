@@ -88,4 +88,41 @@ namespace ke
 		return nullptr;
 	}
 
+	Skybox* AssetManager::loadSkybox(std::string_view name, const SkyboxDesc& desc)
+	{
+		auto key = std::string(name);
+
+		if (m_skyboxes.find(key) != m_skyboxes.end())
+		{
+			return m_skyboxes[key].get();
+		}
+
+		auto skybox = std::unique_ptr<Skybox>(new Skybox(desc));
+
+		m_skyboxes[key] = std::move(skybox);
+
+		return m_skyboxes[key].get();
+	}
+
+	Skybox* AssetManager::getSkybox(std::string_view name)
+	{
+		auto key = std::string(name);
+
+		if (m_skyboxes.find(key) != m_skyboxes.end())
+		{
+			return m_skyboxes[key].get();
+		}
+
+		return nullptr;
+	}
+
+	void AssetManager::destroySkybox(std::string_view name)
+	{
+		auto key = std::string(name);
+
+		if (m_skyboxes.find(key) != m_skyboxes.end())
+		{
+			m_skyboxes.erase(key);
+		}
+	}
 }
