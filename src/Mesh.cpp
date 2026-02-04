@@ -27,6 +27,10 @@ namespace ke
 		glEnableVertexArrayAttrib(m_vao, 2);
 		glVertexArrayAttribBinding(m_vao, 2, 0);
 		glVertexArrayAttribFormat(m_vao, 2, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
+
+		glEnableVertexArrayAttrib(m_vao, 3);
+		glVertexArrayAttribBinding(m_vao, 3, 0);
+		glVertexArrayAttribFormat(m_vao, 3, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, tangent));
 	}
 	
 	void Mesh::destroyBuffers() noexcept

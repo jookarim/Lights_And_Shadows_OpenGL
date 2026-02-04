@@ -17,7 +17,8 @@ namespace ke
 	{
 		Albedo = 0,
 		GrayScale = 0,
-		Skybox = 0
+		Skybox = 0,
+		NormalMap = 1
 	};
 
 	struct CameraDefaults

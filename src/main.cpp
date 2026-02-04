@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include <glm/gtc/type_ptr.hpp>
 
 #define MAX_DIR_LIGHTS 16
 
@@ -29,6 +28,8 @@ int main()
 			2, 3, 0
 		};
 
+		ke::calculateTangent(meshData.vertices, meshData.indices);
+
 		ke::Mesh mesh(meshData);
 
 		ke::RenderState renderState{};
@@ -57,9 +58,18 @@ int main()
 		
 		auto texture = assetManager.loadTexture("texture", textureDesc);
 
+		ke::LoadTextureDesc normalTextureDesc;
+		normalTextureDesc.path = "assets/images/bricks2_normal.jpg";
+		normalTextureDesc.minFilter = ke::TextureFilter::Linear;
+		normalTextureDesc.magFilter = ke::TextureFilter::Linear;
+		normalTextureDesc.wrapS = ke::TextureWrap::Repeat;
+		normalTextureDesc.wrapT = ke::TextureWrap::Repeat;
+
+		auto normalMap = assetManager.loadTexture("normal_map", normalTextureDesc);
+
 		ke::Transform transform{};
 		transform.position = { 0.f, 1.f, 0.f };
-		transform.scale = { 0.5f, 0.5f, 0.5f };
+		transform.scale = { 5.f, 5.f, 5.f };
 		transform.rotation = { 0.f, 0.f, 0.f };
 
 		ke::Camera camera{};
@@ -114,7 +124,7 @@ int main()
 
 		std::vector<ke::DirectionalLight> dirLights = { dirLight };
 
-		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 1);
+		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 2);
 		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
 
 
@@ -148,7 +158,7 @@ int main()
 		{
 			window.pollEvents();
 
-			renderTarget.bind();
+			renderTarget.bind(); 
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
@@ -177,6 +187,8 @@ int main()
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
 
 			texture->bind(ke::TextureSlot::Albedo);
+
+			normalMap->bind(ke::TextureSlot::NormalMap);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(),mesh.getIndexCount());
 

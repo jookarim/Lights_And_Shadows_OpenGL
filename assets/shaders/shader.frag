@@ -1,7 +1,7 @@
 #version 450 core
 
 in vec2 texCoords;
-in vec3 normal;
+in mat3 TBN;
 in vec4 worldPos;
 
 out vec4 fragColor;
@@ -9,6 +9,7 @@ out vec4 fragColor;
 #define MAX_DIR_LIGHTS 16
 
 layout(binding = 0) uniform sampler2D albedo;
+layout(binding = 1) uniform sampler2D normal;
 
 struct DirectionalLight
 {
@@ -22,7 +23,7 @@ struct DirectionalLight
     float pad3;
 };
 
-layout(binding = 1) readonly buffer DirLights
+layout(binding = 2) readonly buffer DirLights
 {
     DirectionalLight dirLights[MAX_DIR_LIGHTS];
 };
@@ -53,11 +54,14 @@ void main()
     vec3 albedoColor = texture(albedo, texCoords).rgb;
     vec3 lighting = vec3(0.0);
 
+    //transform from texture space to world space and make from -1 to 1 to make left, down and backward 
+    vec3 normalMap = normalize(TBN * (texture(normal, texCoords).rgb * 2.0 - 1.0)); 
+
     if (dirLightsCount <= MAX_DIR_LIGHTS)
     {
         for (int i = 0; i < dirLightsCount; ++i)
         {
-            lighting += calculateDirLight(dirLights[i], viewPos, normal, albedoColor);
+            lighting += calculateDirLight(dirLights[i], viewPos, normalMap, albedoColor);
         }
     }
    
