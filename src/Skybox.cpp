@@ -69,34 +69,52 @@ namespace ke
 
     void Skybox::loadFromFile(const SkyboxDesc& desc)
     {
-        glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_id);
+       if (desc.paths.size() != 6) throw std::runtime_error("Skybox paths count is incorrect");
 
-        GLenum minFilter = desc.minFilter == TextureFilter::Linear ? GL_LINEAR : GL_NEAREST;
-        GLenum magFilter = desc.magFilter == TextureFilter::Linear ? GL_LINEAR : GL_NEAREST;
+        glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_id);
 
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTextureParameteri(m_id, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, minFilter);
-        glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, magFilter);
-
-        int width = 0, height = 0, channels = 0;
-
+        
         for (int i = 0; i < 6; ++i)
         {
+
+            glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, desc.minFilter == TextureFilter::Linear ? GL_LINEAR : GL_NEAREST);
+            glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, desc.minFilter == TextureFilter::Nearest ? GL_LINEAR : GL_NEAREST);
+
             stbi_set_flip_vertically_on_load(true);
 
-            stbi_uc* data = stbi_load(desc.paths[i].c_str(),
-                &width, &height, &channels, 0);
+            int width, height, nrChannels;
+            stbi_uc* data = stbi_load(desc.paths[i].c_str(), &width, &height, &nrChannels, 0);
+            
+            GLenum dataFormat;
+            GLenum internalFormat;
 
-            if (!data)
-                throw std::runtime_error("Failed to load cubemap face");
+            if (nrChannels == 1)
+            {
+                dataFormat = GL_RED;
+                internalFormat = GL_R8;
+            }
 
-            GLenum internalFormat = channels == 4 ? GL_RGBA8 : GL_RGB8;
-            GLenum dataFormat = channels == 4 ? GL_RGBA : GL_RGB;
+            else if (nrChannels == 3)
+            {
+                internalFormat = GL_RGB8;
+                dataFormat = GL_RGB;
+            }
+
+            else if (nrChannels == 4)
+            {
+                internalFormat = GL_RGBA8;
+                dataFormat = GL_RGBA;
+            }
+
+            else throw std::runtime_error("Texture format is not found: " + desc.paths[i]);
 
             if (i == 0)
+            {
                 glTextureStorage2D(m_id, 1, internalFormat, width, height);
+            }
 
             glTextureSubImage3D(m_id, 0, 0, 0, i, width, height, 1, dataFormat, GL_UNSIGNED_BYTE, data);
 
@@ -109,20 +127,9 @@ namespace ke
         glCreateVertexArrays(1, &m_vao);
         glCreateBuffers(1, &m_vbo);
 
-        glNamedBufferStorage(
-            m_vbo,
-            SKYBOX_BUFFER_SIZE,
-            SKYBOX_VERTICES,
-            0
-        );
+        glNamedBufferStorage(m_vbo, SKYBOX_BUFFER_SIZE, SKYBOX_VERTICES, 0);
 
-        glVertexArrayVertexBuffer(
-            m_vao,
-            0,
-            m_vbo,
-            0,
-            3 * sizeof(float)
-        );
+        glVertexArrayVertexBuffer(m_vao, 0, m_vbo, 0, 3 * sizeof(float));
 
         glEnableVertexArrayAttrib(m_vao, 0);
         glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, 0);

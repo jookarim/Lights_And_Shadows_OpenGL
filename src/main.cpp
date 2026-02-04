@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <glm/gtc/type_ptr.hpp>
 
 #define MAX_DIR_LIGHTS 16
 
@@ -155,9 +156,7 @@ int main()
 
 			skyboxShader->bind();
 
-			skyboxShader->setUniformMatrix4("u_View", camera.getViewMatrix());
-
-			skyboxShader->setUniformMatrix4("u_Proj", camera.getProjectionMatrix(window.getWidth(), window.getHeight()));
+			skyboxShader->setUniformMatrix4("u_VP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
 			skybox->bind(ke::TextureSlot::Skybox);
 			
@@ -174,6 +173,8 @@ int main()
 			shader->setUniformVec3("viewPos", camera.position);
 
 			shader->setUniformInt("dirLightsCount", static_cast<int>(dirLights.size()));
+
+			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
 
 			texture->bind(ke::TextureSlot::Albedo);
 

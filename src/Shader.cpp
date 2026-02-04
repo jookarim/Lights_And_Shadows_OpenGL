@@ -186,4 +186,11 @@ namespace ke
 
 		glUniform3f(location, value.x, value.y, value.z);
 	}
+
+	void Shader::setUniformMat3(std::string_view name, const glm::mat3& value)
+	{
+		GLint location = getLocation(name);
+
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+	}
 }

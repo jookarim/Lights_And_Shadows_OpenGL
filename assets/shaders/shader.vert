@@ -12,11 +12,13 @@ uniform mat4 u_Model;
 
 out vec4 worldPos;
 
+uniform mat3 u_Norm;
+
 void main()
 {
 	texCoords = aTexCoords;
 
-	normal = normalize(mat3(transpose(inverse(u_Model))) * aNormal);
+	normal = normalize(u_Norm * aNormal);
 
 	worldPos = u_Model * vec4(aPos, 1.0);
 
