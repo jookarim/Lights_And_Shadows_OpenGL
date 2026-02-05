@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 #define MAX_DIR_LIGHTS 16
+#define MAX_POINT_LIGHTS 32
 
 int main()
 {
@@ -122,11 +123,27 @@ int main()
 			-0.2f    
 		));
 
+		ke::PointLight pointLight{};
+
+		pointLight.ambient = glm::vec3(0.15f, 0.0f, 0.0f);   
+		pointLight.diffuse = glm::vec3(2.5f, 0.1f, 0.1f);   
+		pointLight.specular = glm::vec3(1.5f, 0.2f, 2.f);   
+
+		pointLight.position = glm::vec3(2.f, 0.5f, 3.f);
+
+		pointLight.constant = 1.0f;
+		pointLight.linear = 0.045f;
+		pointLight.quadric = 0.0075f;
+
 		std::vector<ke::DirectionalLight> dirLights = { dirLight };
 
 		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 2);
 		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
 
+		std::vector<ke::PointLight> pointLights = { pointLight };
+
+		ke::ShaderStorageBuffer pointStorageBuffer(MAX_POINT_LIGHTS * sizeof(ke::PointLight), 3);
+		pointStorageBuffer.uploadData(pointLights.size() * sizeof(ke::PointLight), pointLights.data());
 
 		ke::SkyboxDesc skyboxDesc;
 		skyboxDesc.minFilter = ke::TextureFilter::Linear;
@@ -184,6 +201,8 @@ int main()
 
 			shader->setUniformInt("dirLightsCount", static_cast<int>(dirLights.size()));
 
+			shader->setUniformInt("pointLightsCount", static_cast<int>(pointLights.size()));
+
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
 
 			texture->bind(ke::TextureSlot::Albedo);
@@ -210,4 +229,4 @@ int main()
 	{
 		std::cout << e.what();
 	}
-}
+} 
