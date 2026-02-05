@@ -62,8 +62,9 @@ vec3 calculateDirLight(DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3
     float diff = max(dot(lightDir, norm), 0.0);
     vec3 diffuse = dirLight.diffuse * diff * albedoColor;
 
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(reflectDir, viewDir), 0.0), 32.0);
+    vec3 halfWayDir = normalize(lightDir + viewDir);
+
+    float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
     vec3 specular = spec * dirLight.specular;
 
     vec3 ambient = dirLight.ambient * albedoColor;
@@ -81,8 +82,8 @@ vec3 calculatePointLight(PointLight pointLight, vec3 viewPos, vec3 normal, vec3 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * pointLight.diffuse * albedoColor;
 
-    vec3 reflectDir = reflect(-lightDir, norm);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    vec3 halfWayDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
     vec3 specular = spec * pointLight.specular;
 
     vec3 ambient = pointLight.ambient * albedoColor;
