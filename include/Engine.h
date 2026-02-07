@@ -16,3 +16,5 @@
 #include "Lights.h"
 #include "Skybox.h"
 #include "TangentCompute.h"
+#include "DirectionalShadow.h"
+#include "MeshGenerator.h"

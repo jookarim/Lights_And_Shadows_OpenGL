@@ -9,8 +9,11 @@ out vec4 fragColor;
 #define MAX_DIR_LIGHTS 16
 #define MAX_POINT_LIGHTS 32
 
+in vec4 fragPosLightSpaces[MAX_DIR_LIGHTS];
+
 layout(binding = 0) uniform sampler2D albedo;
 layout(binding = 1) uniform sampler2D normal;
+layout(binding = 2) uniform sampler2D shadow[MAX_DIR_LIGHTS];
 
 struct DirectionalLight
 {
@@ -22,6 +25,7 @@ struct DirectionalLight
     float pad2;
     vec3 direction;
     float pad3;
+    mat4 lightSpaceMatrix;
 };
 
 struct PointLight
@@ -39,12 +43,12 @@ struct PointLight
     float pad3;
 };
 
-layout(binding = 2) readonly buffer DirLights
+layout(binding = 3) readonly buffer DirLights
 {
     DirectionalLight dirLights[MAX_DIR_LIGHTS];
 };
 
-layout(binding = 3) readonly buffer PointLights
+layout(binding = 4) readonly buffer PointLights
 {
     PointLight pointLights[MAX_POINT_LIGHTS];
 };
@@ -53,7 +57,24 @@ uniform vec3 viewPos;
 uniform int dirLightsCount;
 uniform int pointLightsCount;
 
-vec3 calculateDirLight(DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3 albedoColor)
+float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
+{
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.z > 1.0) return 0.0;
+
+    vec3 lightDir = normalize(-dirLights[index].direction);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    float closestDepth = texture(shadow[index], projCoords.xy).r;
+    float currentDepth = projCoords.z;
+
+    return currentDepth - bias > closestDepth ? 1.0 : 0.0;
+}
+
+
+vec3 calculateDirLight(int index, DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3 albedoColor)
 {
     vec3 norm = normalize(normal);
     vec3 lightDir = normalize(-dirLight.direction);
@@ -64,12 +85,15 @@ vec3 calculateDirLight(DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3
 
     vec3 halfWayDir = normalize(lightDir + viewDir);
 
-    float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
+    float spec = pow(max(dot(norm, halfWayDir), 0.0), 32.0);
     vec3 specular = spec * dirLight.specular;
 
     vec3 ambient = dirLight.ambient * albedoColor;
     
-    return ambient + diffuse + specular;
+    float shadow = calculateShadow(index, fragPosLightSpaces[index], normal);
+
+    return ambient + (1.0 - shadow) * (diffuse + specular);
+
 }
 
 vec3 calculatePointLight(PointLight pointLight, vec3 viewPos, vec3 normal, vec3 albedoColor)
@@ -83,7 +107,7 @@ vec3 calculatePointLight(PointLight pointLight, vec3 viewPos, vec3 normal, vec3 
     vec3 diffuse = diff * pointLight.diffuse * albedoColor;
 
     vec3 halfWayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfWayDir), 0.0), 32.0);
+    float spec = pow(max(dot(norm, halfWayDir), 0.0), 32.0);
     vec3 specular = spec * pointLight.specular;
 
     vec3 ambient = pointLight.ambient * albedoColor;
@@ -106,7 +130,7 @@ void main()
     {
         for (int i = 0; i < dirLightsCount; ++i)
         {
-            lighting += calculateDirLight(dirLights[i], viewPos, normalMap, albedoColor);
+            lighting += calculateDirLight(i, dirLights[i], viewPos, normalMap, albedoColor);
         }
     }
    

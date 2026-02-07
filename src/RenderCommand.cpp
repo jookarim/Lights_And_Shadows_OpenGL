@@ -104,6 +104,11 @@ namespace ke
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+
+    void RenderCommand::SetViewport(int width, int height)
+    {
+        glViewport(0, 0, width, height);
+    }
 }
 
 

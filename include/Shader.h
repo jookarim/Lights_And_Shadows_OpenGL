@@ -29,7 +29,7 @@ namespace ke
 
 		std::string loadFromFile(std::string_view path);
 
-		GLuint createShader(std::string_view code, GLenum type);
+		GLuint createShader(std::string_view code, GLenum type, std::string_view path);
 		void createProgram(GLuint& vertex, GLuint& fragment);
 		void destroyProgram() noexcept;
 		void destroyShaders(GLuint& vertex, GLuint& fragment) noexcept;

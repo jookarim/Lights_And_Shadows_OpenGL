@@ -3,6 +3,11 @@
 #include <cstdint>
 #include <string>
 
+#define MAX_DIR_LIGHTS 16
+#define MAX_POINT_LIGHTS 32
+#define SHADOW_WIDTH 2048
+#define SHADOW_HEIGHT 2048
+
 namespace ke
 {
 	struct AppConfig
@@ -18,7 +23,8 @@ namespace ke
 		Albedo = 0,
 		GrayScale = 0,
 		Skybox = 0,
-		NormalMap = 1
+		NormalMap = 1,
+		ShadowMap = 2
 	};
 
 	struct CameraDefaults

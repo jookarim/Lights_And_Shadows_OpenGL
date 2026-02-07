@@ -1,8 +1,5 @@
 #include "Engine.h"
 
-#define MAX_DIR_LIGHTS 16
-#define MAX_POINT_LIGHTS 32
-
 int main()
 {
 	try
@@ -33,6 +30,8 @@ int main()
 
 		ke::Mesh mesh(meshData);
 
+		ke::Mesh sphereMesh(ke::generateSphere());
+
 		ke::RenderState renderState{};
 		renderState.cullEnabled = false;
 		renderState.depthFunc = ke::DepthFunc::Less;
@@ -49,7 +48,7 @@ int main()
 		shaderDesc.fragPath = "assets/shaders/shader.frag";
 
 		auto shader = assetManager.loadShader("shader", shaderDesc);
-
+														
 		ke::LoadTextureDesc textureDesc{};
 		textureDesc.path = "assets/images/bricks2.jpg";
 		textureDesc.magFilter = ke::TextureFilter::Linear;
@@ -70,7 +69,7 @@ int main()
 
 		ke::Transform transform{};
 		transform.position = { 0.f, 1.f, 0.f };
-		transform.scale = { 5.f, 5.f, 5.f };
+		transform.scale = { 5.f, 1.f, 5.f };
 		transform.rotation = { 0.f, 0.f, 0.f };
 
 		ke::Camera camera{};
@@ -109,42 +108,6 @@ int main()
 
 		auto grayScaleShader = assetManager.loadShader("grayscale_shader", grayShaderDesc);
 
-		ke::DirectionalLight dirLight{};
-
-		dirLight.ambient = glm::vec3(0.08f);
-
-		dirLight.diffuse = glm::vec3(0.9f);
-
-		dirLight.specular = glm::vec3(0.25f);
-
-		dirLight.direction = glm::normalize(glm::vec3(
-			-0.3f,   
-			-1.0f,   
-			-0.2f    
-		));
-
-		ke::PointLight pointLight{};
-
-		pointLight.ambient = glm::vec3(0.15f, 0.0f, 0.0f);   
-		pointLight.diffuse = glm::vec3(2.5f, 0.1f, 0.1f);   
-		pointLight.specular = glm::vec3(1.5f, 0.2f, 2.f);   
-
-		pointLight.position = glm::vec3(2.f, 0.5f, 3.f);
-
-		pointLight.constant = 1.0f;
-		pointLight.linear = 0.045f;
-		pointLight.quadric = 0.0075f;
-
-		std::vector<ke::DirectionalLight> dirLights = { dirLight };
-
-		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 2);
-		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
-
-		std::vector<ke::PointLight> pointLights = { pointLight };
-
-		ke::ShaderStorageBuffer pointStorageBuffer(MAX_POINT_LIGHTS * sizeof(ke::PointLight), 3);
-		pointStorageBuffer.uploadData(pointLights.size() * sizeof(ke::PointLight), pointLights.data());
-
 		ke::SkyboxDesc skyboxDesc;
 		skyboxDesc.minFilter = ke::TextureFilter::Linear;
 		skyboxDesc.magFilter = ke::TextureFilter::Linear;
@@ -171,53 +134,167 @@ int main()
 		skyboxRenderState.cullEnabled = false;
 		skyboxRenderState.depthFunc = ke::DepthFunc::LessEqual;
 
+		ke::DirectionalLight dirLight{};
+
+		dirLight.ambient = glm::vec3(0.08f);
+
+		dirLight.diffuse = glm::vec3(0.9f);
+
+		dirLight.specular = glm::vec3(0.25f);
+
+		dirLight.direction = glm::normalize(glm::vec3{ -0.4f, -1.0f, -0.2f });
+
+
+		ke::DirectionalLight dirLight2{};
+
+		dirLight2.ambient = glm::vec3(0.08f);
+
+		dirLight2.diffuse = glm::vec3(0.9f);
+
+		dirLight2.specular = glm::vec3(0.25f);
+
+		dirLight2.direction = glm::normalize(glm::vec3(
+			-0.3f,
+			-1.0f,
+			0.2f
+		));
+
+
+		dirLight2.direction = glm::normalize(glm::vec3{ 0.2f, -1.0f, 0.3f });
+
+		ke::PointLight pointLight{};
+
+		pointLight.ambient = glm::vec3(0.15f, 0.0f, 0.0f);
+		pointLight.diffuse = glm::vec3(2.5f, 0.1f, 0.1f);
+		pointLight.specular = glm::vec3(1.5f, 0.2f, 2.f);
+
+		pointLight.position = glm::vec3(2.f, 0.5f, 3.f);
+
+		pointLight.constant = 1.0f;
+		pointLight.linear = 0.045f;
+		pointLight.quadric = 0.0075f;
+
+		std::vector<std::unique_ptr<ke::DirectionalShadow>> shadows;
+
+		shadows.emplace_back(
+			std::make_unique<ke::DirectionalShadow>(
+				glm::ivec2{ 2048, 2048 }, assetManager, dirLight, 0
+			)
+		);
+
+		shadows.emplace_back(
+			std::make_unique<ke::DirectionalShadow>(
+				glm::ivec2{ 2048, 2048 }, assetManager, dirLight2, 1
+			)
+		);
+
+		std::vector<ke::DirectionalLight> dirLights = { dirLight, dirLight2 };
+
+		
+		ke::ShaderDesc shadowShaderDesc;
+		shadowShaderDesc.vertPath = "assets/shaders/shadow.vert";
+		shadowShaderDesc.fragPath = "assets/shaders/shadow.frag";
+
+		auto shadowShader = assetManager.loadShader("shadow_shader", shadowShaderDesc);
+
+		ke::Transform sphereTransform{};
+		sphereTransform.position = { 3.f, 10.f, 0.f };   
+		sphereTransform.scale = { 0.5f, 0.5f, 0.5f };      
+		sphereTransform.rotation = { 0.f, 0.f, 0.f };
+
+		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 3);
+		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
+
+		std::vector<ke::PointLight> pointLights = { pointLight };
+
+		ke::ShaderStorageBuffer pointStorageBuffer(MAX_POINT_LIGHTS * sizeof(ke::PointLight), 4);
+		pointStorageBuffer.uploadData(pointLights.size() * sizeof(ke::PointLight), pointLights.data());
+
 		while (!window.shouldClose())
 		{
 			window.pollEvents();
+		
+			for (size_t i = 0; i < shadows.size(); ++i)
+			{
+				shadows[i]->bind();
 
-			renderTarget.bind(); 
+				ke::RenderCommand::SetViewport(shadows[i]->getWidth(), shadows[i]->getHeight());
+
+				ke::RenderCommand::Clear(ke::ClearCommand::Depth);
+
+				ke::RenderState shadowState = renderState;
+				shadowState.cullEnabled = true;
+				shadowState.cullMode = ke::CullMode::Front;
+
+				ke::RenderCommand::ApplyRenderState(shadowState);
+
+				shadowShader->bind();
+				shadowShader->setUniformMatrix4("lightSpaceMatrix", dirLights[shadows[i]->getLightIndex()].lightSpaceMatrix);
+
+				shadowShader->setUniformMatrix4("u_Model", transform.getModelMatrix());
+
+				ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
+
+				shadowShader->setUniformMatrix4("u_Model", sphereTransform.getModelMatrix());
+
+				ke::RenderCommand::DrawIndexed(sphereMesh.getVAO(), sphereMesh.getIndexCount());
+
+				ke::RenderCommand::ApplyRenderState(renderState);
+			}
+
+			ke::RenderCommand::SetViewport(window.getWidth(), window.getHeight());
+			
+			renderTarget.bind();
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
 			ke::RenderCommand::ApplyRenderState(skyboxRenderState);
 
 			skyboxShader->bind();
-
 			skyboxShader->setUniformMatrix4("u_VP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * glm::mat4(glm::mat3(camera.getViewMatrix())));
 
 			skybox->bind(ke::TextureSlot::Skybox);
-			
+
 			ke::RenderCommand::DrawSkybox(skybox->getVAO());
 
 			ke::RenderCommand::ApplyRenderState(renderState);
 
 			shader->bind();
 
-			shader->setUniformMatrix4("u_MVP",camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * transform.getModelMatrix());
-
-			shader->setUniformMatrix4("u_Model", transform.getModelMatrix());
-
 			shader->setUniformVec3("viewPos", camera.position);
+			shader->setUniformInt("dirLightsCount", (int)dirLights.size());
+			shader->setUniformInt("pointLightsCount", (int)pointLights.size());
 
-			shader->setUniformInt("dirLightsCount", static_cast<int>(dirLights.size()));
+			for (size_t i = 0; i < shadows.size(); ++i)
+			{
+				shadows[i]->getDepthMap(assetManager, shadows[i]->getLightIndex())->bind(static_cast<ke::TextureSlot>((uint32_t)ke::TextureSlot::ShadowMap + shadows[i]->getLightIndex()));
+			}
 
-			shader->setUniformInt("pointLightsCount", static_cast<int>(pointLights.size()));
+			texture->bind(ke::TextureSlot::Albedo);
+			normalMap->bind(ke::TextureSlot::NormalMap);
+
+			shader->setUniformMatrix4("u_MVP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * transform.getModelMatrix());
+
+			shader->setUniformMatrix4("u_Model",  transform.getModelMatrix());
 
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
 
-			texture->bind(ke::TextureSlot::Albedo);
+			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 
-			normalMap->bind(ke::TextureSlot::NormalMap);
+			shader->setUniformMatrix4("u_MVP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * sphereTransform.getModelMatrix());
 
-			ke::RenderCommand::DrawIndexed(mesh.getVAO(),mesh.getIndexCount());
+			shader->setUniformMatrix4("u_Model", sphereTransform.getModelMatrix());
+
+			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(sphereTransform.getModelMatrix()))));
+
+			ke::RenderCommand::DrawIndexed(sphereMesh.getVAO(), sphereMesh.getIndexCount());
 
 			ke::RenderCommand::BindDefaultFramebuffer();
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
-			proceduralTexture->bind(ke::TextureSlot::GrayScale);
-
 			grayScaleShader->bind();
+			proceduralTexture->bind(ke::TextureSlot::GrayScale);
 
 			ke::RenderCommand::DrawFullscreenQuad();
 

@@ -15,6 +15,7 @@ namespace ke
 		float pad2;
 		glm::vec3 direction{};
 		float pad3;
+		glm::mat4 lightSpaceMatrix{};
 	};
 
 	struct PointLight

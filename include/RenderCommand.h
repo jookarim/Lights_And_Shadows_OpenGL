@@ -58,12 +58,12 @@ namespace ke
 
 		static void DrawSkybox(GLuint vao);
 
+		static void SetViewport(int width, int height);
+
 		RenderCommand(const RenderCommand&) = delete;
 		RenderCommand& operator=(const RenderCommand&) = delete;
 
 		RenderCommand(RenderCommand&&) = delete;
 		RenderCommand& operator=(RenderCommand&&) = delete;
-
-			
 	};
 }

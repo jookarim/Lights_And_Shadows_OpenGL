@@ -19,7 +19,7 @@ namespace ke
 			glm::vec2 deltaUV1 = vertices[i1].texCoord - vertices[i0].texCoord;
 			glm::vec2 deltaUV2 = vertices[i2].texCoord - vertices[i0].texCoord;
 
-			float det = deltaUV1.x * deltaUV2.y + deltaUV2.x * deltaUV1.y;
+			float det = deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y;
 
 			float f = 1.f / det;
 

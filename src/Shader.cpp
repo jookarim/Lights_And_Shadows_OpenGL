@@ -3,7 +3,7 @@
 
 namespace ke
 {
-	GLuint Shader::createShader(std::string_view code, GLenum type)
+	GLuint Shader::createShader(std::string_view code, GLenum type, std::string_view path)
 	{
 		GLuint shader = glCreateShader(type);
 		
@@ -22,7 +22,7 @@ namespace ke
 			glGetShaderInfoLog(shader, sizeof(infoLog), nullptr, infoLog);
 
 			glDeleteShader(shader);
-			throw std::runtime_error(infoLog);
+			throw std::runtime_error(std::string(infoLog) + std::string(" ") + std::string(path));
 		}
 
 		return shader;
@@ -136,12 +136,12 @@ namespace ke
 		std::string vertCode = loadFromFile(desc.vertPath);
 		std::string fragCode = loadFromFile(desc.fragPath);
 
-		GLuint vertShader = createShader(vertCode, GL_VERTEX_SHADER);
-		GLuint fragShader = createShader(fragCode, GL_FRAGMENT_SHADER);
+		GLuint vertShader = createShader(vertCode, GL_VERTEX_SHADER, desc.vertPath);
+		GLuint fragShader = createShader(fragCode, GL_FRAGMENT_SHADER, desc.fragPath);
 
 		createProgram(vertShader, fragShader);
 	}
-
+	
 	Shader::Shader(Shader&& other) noexcept
 	{
 		m_program = other.m_program;
