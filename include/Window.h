@@ -54,5 +54,7 @@ namespace ke
 
 		int getWidth() const { return m_wndDesc.width; }
 		int getHeight() const { return m_wndDesc.height; }
+
+		GLFWwindow* getHandle() const { return m_handle; }
 	};
 }

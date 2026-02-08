@@ -33,6 +33,8 @@ namespace ke
 			return assetManager.getTexture("shadow_map" + std::to_string(lightIndex));
 		}
 
+		void updateFromLight(const ke::DirectionalLight& dirLight);
+
 		int getWidth() const { return m_width; }
 		int getHeight() const { return m_height; }
 

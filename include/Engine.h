@@ -18,3 +18,4 @@
 #include "TangentCompute.h"
 #include "DirectionalShadow.h"
 #include "MeshGenerator.h"
+#include "Gui.h"

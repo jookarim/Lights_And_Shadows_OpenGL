@@ -94,10 +94,21 @@ int main()
 
 		auto proceduralTexture = assetManager.createTexture("procedural_texture", proceduralTextureDesc);
 
+
 		ke::RenderTargetDesc fboDesc{};
 		fboDesc.width = window.getWidth();
 		fboDesc.height = window.getHeight();
 		fboDesc.colorAttachments = { proceduralTexture };
+
+		ke::TextureDesc depthDesc{};
+		depthDesc.format = ke::TextureFormat::Depth24;
+		depthDesc.width = window.getWidth();
+		depthDesc.height = window.getHeight();
+		depthDesc.data = nullptr;
+
+		auto depthTexture = assetManager.createTexture("grayscale_depth", depthDesc);
+
+		fboDesc.depthAttachment = depthTexture;
 
 		ke::RenderTarget renderTarget;
 		renderTarget.attachData(fboDesc);
@@ -140,35 +151,33 @@ int main()
 
 		dirLight.diffuse = glm::vec3(0.9f);
 
-		dirLight.specular = glm::vec3(0.25f);
+		dirLight.specular = glm::vec3(1.f);
 
-		dirLight.direction = glm::normalize(glm::vec3{ -0.4f, -1.0f, -0.2f });
+		dirLight.direction = glm::normalize(glm::vec3{ -0.365f, -0.714f, -0.183f });
 
 
 		ke::DirectionalLight dirLight2{};
 
 		dirLight2.ambient = glm::vec3(0.08f);
 
-		dirLight2.diffuse = glm::vec3(0.9f);
+		dirLight2.diffuse = glm::vec3(1.f);
 
-		dirLight2.specular = glm::vec3(0.25f);
+		dirLight2.specular = glm::vec3(1.f);
 
 		dirLight2.direction = glm::normalize(glm::vec3(
-			-0.3f,
-			-1.0f,
-			0.2f
+			-2.143f,
+			-2.857f,
+			0.282f
 		));
 
 
-		dirLight2.direction = glm::normalize(glm::vec3{ 0.2f, -1.0f, 0.3f });
-
 		ke::PointLight pointLight{};
 
-		pointLight.ambient = glm::vec3(0.15f, 0.0f, 0.0f);
-		pointLight.diffuse = glm::vec3(2.5f, 0.1f, 0.1f);
-		pointLight.specular = glm::vec3(1.5f, 0.2f, 2.f);
+		pointLight.ambient = glm::vec3(0.1f, 0.0f, 0.0f);
+		pointLight.diffuse = glm::vec3(1.f);
+		pointLight.specular = glm::vec3(1.f);
 
-		pointLight.position = glm::vec3(2.f, 0.5f, 3.f);
+		pointLight.position = glm::vec3(2.5f, 1.f, 3.f);
 
 		pointLight.constant = 1.0f;
 		pointLight.linear = 0.045f;
@@ -190,7 +199,6 @@ int main()
 
 		std::vector<ke::DirectionalLight> dirLights = { dirLight, dirLight2 };
 
-		
 		ke::ShaderDesc shadowShaderDesc;
 		shadowShaderDesc.vertPath = "assets/shaders/shadow.vert";
 		shadowShaderDesc.fragPath = "assets/shaders/shadow.frag";
@@ -203,17 +211,25 @@ int main()
 		sphereTransform.rotation = { 0.f, 0.f, 0.f };
 
 		ke::ShaderStorageBuffer storageBuffer(MAX_DIR_LIGHTS * sizeof(ke::DirectionalLight), 3);
-		storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
 
 		std::vector<ke::PointLight> pointLights = { pointLight };
 
 		ke::ShaderStorageBuffer pointStorageBuffer(MAX_POINT_LIGHTS * sizeof(ke::PointLight), 4);
-		pointStorageBuffer.uploadData(pointLights.size() * sizeof(ke::PointLight), pointLights.data());
+
+		ke::Gui gui(window);
+
+		bool grayscale = true;
+		bool hasNormaMap = true;
 
 		while (!window.shouldClose())
 		{
+			gui.BeginFrame();
+
+			gui.GrayScale(grayscale);
+			gui.NormalMapping(hasNormaMap);
+
 			window.pollEvents();
-		
+
 			for (size_t i = 0; i < shadows.size(); ++i)
 			{
 				shadows[i]->bind();
@@ -244,7 +260,9 @@ int main()
 
 			ke::RenderCommand::SetViewport(window.getWidth(), window.getHeight());
 			
-			renderTarget.bind();
+			if(grayscale)
+				renderTarget.bind();
+			else ke::RenderCommand::BindDefaultFramebuffer();
 
 			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
 
@@ -278,6 +296,7 @@ int main()
 			shader->setUniformMatrix4("u_Model",  transform.getModelMatrix());
 
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(transform.getModelMatrix()))));
+			shader->setUniformInt("normalMapping", hasNormaMap);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
 
@@ -286,17 +305,36 @@ int main()
 			shader->setUniformMatrix4("u_Model", sphereTransform.getModelMatrix());
 
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(sphereTransform.getModelMatrix()))));
+			shader->setUniformInt("normalMapping", hasNormaMap);
 
 			ke::RenderCommand::DrawIndexed(sphereMesh.getVAO(), sphereMesh.getIndexCount());
 
-			ke::RenderCommand::BindDefaultFramebuffer();
+			if (grayscale)
+			{
+				ke::RenderCommand::BindDefaultFramebuffer();
+				
+				grayScaleShader->bind();
+				proceduralTexture->bind(ke::TextureSlot::GrayScale);
+				
+				ke::RenderState renderState{};
+				renderState.depthTest = false;
+				renderState.depthWrite = false;
 
-			ke::RenderCommand::Clear(ke::ClearCommand::Color | ke::ClearCommand::Depth);
+				ke::RenderCommand::ApplyRenderState(renderState);
 
-			grayScaleShader->bind();
-			proceduralTexture->bind(ke::TextureSlot::GrayScale);
+				ke::RenderCommand::Clear(ke::ClearCommand::Color);
 
-			ke::RenderCommand::DrawFullscreenQuad();
+				ke::RenderCommand::DrawFullscreenQuad();
+
+				ke::RenderCommand::ApplyRenderState(renderState);
+			}
+
+			gui.UpdateLights(dirLights, pointLights, shadows);
+
+			storageBuffer.uploadData(dirLights.size() * sizeof(ke::DirectionalLight), dirLights.data());
+			pointStorageBuffer.uploadData(pointLights.size() * sizeof(ke::PointLight), pointLights.data());
+
+			gui.Render();
 
 			window.swapBuffers();
 		}

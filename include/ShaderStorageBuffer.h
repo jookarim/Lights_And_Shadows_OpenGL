@@ -15,6 +15,7 @@ namespace ke
 		ShaderStorageBuffer(int size ,int bindingPoint);
 		~ShaderStorageBuffer() noexcept;
 
+		void bindBase(int bindingPoint) const noexcept;
 		void uploadData(int size, const void* data);
 	};
 }

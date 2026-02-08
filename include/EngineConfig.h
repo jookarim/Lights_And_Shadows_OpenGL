@@ -12,8 +12,8 @@ namespace ke
 {
 	struct AppConfig
 	{
-		static constexpr int WindowWidth = 1270;
-		static constexpr int WindowHeight = 720;
+		static constexpr int WindowWidth = 1920;
+		static constexpr int WindowHeight = 1080;
 		static constexpr const char* WindowTitle = "Window";
 		static constexpr const char* WindowIcon = "assets/images/pharaoh.png";
 	};

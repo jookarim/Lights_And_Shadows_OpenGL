@@ -3,6 +3,7 @@
 in vec2 texCoords;
 in mat3 TBN;
 in vec4 worldPos;
+in vec3 vNormal;
 
 out vec4 fragColor;
 
@@ -56,6 +57,7 @@ layout(binding = 4) readonly buffer PointLights
 uniform vec3 viewPos;
 uniform int dirLightsCount;
 uniform int pointLightsCount;
+uniform bool normalMapping = false;
 
 float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
 {
@@ -90,7 +92,7 @@ vec3 calculateDirLight(int index, DirectionalLight dirLight, vec3 viewPos, vec3 
 
     vec3 ambient = dirLight.ambient * albedoColor;
     
-    float shadow = calculateShadow(index, fragPosLightSpaces[index], normal);
+    float shadow = calculateShadow(index, fragPosLightSpaces[index], norm);
 
     return ambient + (1.0 - shadow) * (diffuse + specular);
 
@@ -130,7 +132,9 @@ void main()
     {
         for (int i = 0; i < dirLightsCount; ++i)
         {
-            lighting += calculateDirLight(i, dirLights[i], viewPos, normalMap, albedoColor);
+            if(normalMapping)
+                lighting += calculateDirLight(i, dirLights[i], viewPos, normalMap, albedoColor);
+            else lighting += calculateDirLight(i, dirLights[i], viewPos, vNormal, albedoColor);
         }
     }
    
@@ -138,7 +142,9 @@ void main()
     {
         for (int i = 0; i < pointLightsCount; ++i)
         {
-            lighting += calculatePointLight(pointLights[i], viewPos, normalMap, albedoColor);
+            if(normalMapping)
+                lighting += calculatePointLight(pointLights[i], viewPos, normalMap, albedoColor);
+            else lighting += calculatePointLight(pointLights[i], viewPos, vNormal, albedoColor);
         }
     }
 

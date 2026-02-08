@@ -33,4 +33,8 @@ namespace ke
 		glNamedBufferSubData(m_id, 0, size, data);
 	}
 
+	void ShaderStorageBuffer::bindBase(int bindingPoint) const noexcept
+	{
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_id);
+	}
 }

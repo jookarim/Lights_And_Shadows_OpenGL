@@ -9,6 +9,7 @@ layout(location = 3) in vec3 aTangent;
 
 out vec2 texCoords;
 out mat3 TBN;
+out vec3 vNormal;
 out vec4 worldPos;
 out vec4 fragPosLightSpaces[MAX_DIR_LIGHTS];
 
@@ -44,6 +45,7 @@ void main()
     vec3 bitangent = normalize(cross(normal, tangent));
 
     TBN = mat3(tangent, bitangent, normal);
+    vNormal = normal;
 
     worldPos = u_Model * vec4(aPos, 1.0);
 
