@@ -21,6 +21,7 @@ namespace ke
 		void UpdateLights(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows);
 		void NormalMapping(bool& hasNormalMapping);
 		void GrayScale(bool& grayScale);
+		void Animation(bool& animation);
 
 		void Draw(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows, bool& grayscale, bool& normalMapping);
 

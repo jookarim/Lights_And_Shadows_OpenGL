@@ -89,4 +89,8 @@ namespace ke
 		}
 	}
 
+	void Gui::Animation(bool& animation)
+	{
+		ImGui::Checkbox("Animation", &animation);
+	}
 }

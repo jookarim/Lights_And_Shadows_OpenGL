@@ -220,16 +220,25 @@ int main()
 
 		bool grayscale = true;
 		bool hasNormaMap = true;
+		bool animation = true;
+
+		float angle = 0.f;
 
 		while (!window.shouldClose())
-		{
-			sphereTransform.position.x = cos(glfwGetTime());
-			sphereTransform.position.z = sin(glfwGetTime());
-
+		{	
 			gui.BeginFrame();
 
 			gui.GrayScale(grayscale);
 			gui.NormalMapping(hasNormaMap);
+			gui.Animation(animation);
+
+			if (animation)
+			{
+				sphereTransform.position.x = cos(angle);
+				sphereTransform.position.z = sin(angle);
+
+				angle += 0.1f;
+			}
 
 			window.pollEvents();
 
