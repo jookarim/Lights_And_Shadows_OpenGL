@@ -170,7 +170,9 @@ namespace ke
 		}
 
 		glTextureStorage2D(m_id, 1, internalFormat, desc.width, desc.height);
-		glTextureSubImage2D(m_id, 0, 0, 0, desc.width, desc.height, dataFormat, dataType, desc.data);
+
+		if(desc.data != nullptr)
+			glTextureSubImage2D(m_id, 0, 0, 0, desc.width, desc.height, dataFormat, dataType, desc.data);
 
 		GLenum minFilter = GL_NEAREST , magFilter = GL_NEAREST;
 

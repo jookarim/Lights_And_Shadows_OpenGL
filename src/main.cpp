@@ -77,7 +77,7 @@ int main()
 		auto sphereTexture = assetManager.loadTexture("rock_texture", sphereTextureDesc);
 
 		ke::LoadTextureDesc sphereNormalTextureDesc;
-		sphereNormalTextureDesc.path = "assets/images/rock_normal.png";
+		sphereNormalTextureDesc.path = "assets/images/rock_normal.jpg";
 		sphereNormalTextureDesc.minFilter = ke::TextureFilter::Linear;
 		sphereNormalTextureDesc.magFilter = ke::TextureFilter::Linear;
 		sphereNormalTextureDesc.wrapS = ke::TextureWrap::Repeat;
@@ -242,6 +242,11 @@ int main()
 
 		float angle = 0.f;
 
+		float deltaTime = 0.f, lastFrame = 0.f;
+
+		const GLubyte* renderer = glGetString(GL_RENDERER);
+		std::cout << "Renderer: " << renderer << "\n";
+
 		while (!window.shouldClose())
 		{	
 			gui.BeginFrame();
@@ -250,12 +255,17 @@ int main()
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);
 
+			float currTime = static_cast<float>(glfwGetTime());
+			deltaTime = currTime - lastFrame;
+			lastFrame = currTime;
+
 			if (animation)
 			{
 				sphereTransform.position.x = cos(angle);
 				sphereTransform.position.z = sin(angle);
+				sphereTransform.rotation.y += (ROTATION_SPEED * deltaTime);
 
-				angle += 0.1f;
+				angle += ANGLE_INCREASE * deltaTime;
 			}
 
 			window.pollEvents();

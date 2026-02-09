@@ -7,6 +7,8 @@
 #define MAX_POINT_LIGHTS 32
 #define SHADOW_WIDTH 2048
 #define SHADOW_HEIGHT 2048
+#define ANGLE_INCREASE 2.f
+#define ROTATION_SPEED 75.f
 
 namespace ke
 {
