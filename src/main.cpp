@@ -67,6 +67,24 @@ int main()
 
 		auto normalMap = assetManager.loadTexture("normal_map", normalTextureDesc);
 
+		ke::LoadTextureDesc sphereTextureDesc{};
+		sphereTextureDesc.path = "assets/images/rock_diffuse.png";
+		sphereTextureDesc.magFilter = ke::TextureFilter::Linear;
+		sphereTextureDesc.minFilter = ke::TextureFilter::Linear;
+		sphereTextureDesc.wrapS = ke::TextureWrap::Repeat;
+		sphereTextureDesc.wrapT = ke::TextureWrap::Repeat;
+
+		auto sphereTexture = assetManager.loadTexture("rock_texture", sphereTextureDesc);
+
+		ke::LoadTextureDesc sphereNormalTextureDesc;
+		sphereNormalTextureDesc.path = "assets/images/rock_normal.png";
+		sphereNormalTextureDesc.minFilter = ke::TextureFilter::Linear;
+		sphereNormalTextureDesc.magFilter = ke::TextureFilter::Linear;
+		sphereNormalTextureDesc.wrapS = ke::TextureWrap::Repeat;
+		sphereNormalTextureDesc.wrapT = ke::TextureWrap::Repeat;
+
+		auto sphereNormalMap = assetManager.loadTexture("rock_normal", sphereNormalTextureDesc);
+
 		ke::Transform transform{};
 		transform.position = { 0.f, 1.f, 0.f };
 		transform.scale = { 5.f, 1.f, 5.f };
@@ -311,6 +329,9 @@ int main()
 			shader->setUniformInt("normalMapping", hasNormaMap);
 
 			ke::RenderCommand::DrawIndexed(mesh.getVAO(), mesh.getIndexCount());
+
+			sphereTexture->bind(ke::TextureSlot::Albedo);
+			sphereNormalMap->bind(ke::TextureSlot::NormalMap);
 
 			shader->setUniformMatrix4("u_MVP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * sphereTransform.getModelMatrix());
 
