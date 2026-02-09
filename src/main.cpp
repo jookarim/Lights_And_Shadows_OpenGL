@@ -312,15 +312,15 @@ int main()
 			if (grayscale)
 			{
 				ke::RenderCommand::BindDefaultFramebuffer();
-				
+
 				grayScaleShader->bind();
 				proceduralTexture->bind(ke::TextureSlot::GrayScale);
-				
-				ke::RenderState renderState{};
-				renderState.depthTest = false;
-				renderState.depthWrite = false;
 
-				ke::RenderCommand::ApplyRenderState(renderState);
+				ke::RenderState grayscaleRenderState{};
+				grayscaleRenderState.depthTest = false;
+				grayscaleRenderState.depthWrite = false;
+
+				ke::RenderCommand::ApplyRenderState(grayscaleRenderState);
 
 				ke::RenderCommand::Clear(ke::ClearCommand::Color);
 
@@ -328,6 +328,7 @@ int main()
 
 				ke::RenderCommand::ApplyRenderState(renderState);
 			}
+
 
 			gui.UpdateLights(dirLights, pointLights, shadows);
 

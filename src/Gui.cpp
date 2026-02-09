@@ -75,7 +75,7 @@ namespace ke
 				ImGui::PushID((int)i + 2);
 
 				ImGui::Text("Directional Light %d", (int)i);
-				ImGui::SliderFloat3("Direction", &dirLights[i].direction.x, -30.f, 30.f);
+				ImGui::SliderFloat3("Direction", &dirLights[i].direction.x, -3.f, 3.f);
 				ImGui::ColorEdit3("Ambient", &dirLights[i].ambient.x);
 				ImGui::ColorEdit3("Diffuse", &dirLights[i].diffuse.x);
 				ImGui::ColorEdit3("Specular", &dirLights[i].specular.x);
