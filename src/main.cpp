@@ -223,6 +223,9 @@ int main()
 
 		while (!window.shouldClose())
 		{
+			sphereTransform.position.x = cos(glfwGetTime());
+			sphereTransform.position.z = sin(glfwGetTime());
+
 			gui.BeginFrame();
 
 			gui.GrayScale(grayscale);
