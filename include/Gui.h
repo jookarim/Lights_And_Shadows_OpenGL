@@ -24,6 +24,7 @@ namespace ke
 		void Animation(bool& animation);
 		void Rotation(bool& rotation);
 		void sliderPCF(int& pcfValue);
+		void PCF(bool& pcfEnabled);
 
 		void Draw(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows, bool& grayscale, bool& normalMapping);
 

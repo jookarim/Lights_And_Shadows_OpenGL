@@ -245,6 +245,7 @@ int main()
 
 		float deltaTime = 0.f, lastFrame = 0.f;
 		int pcfValue = 1;
+		bool pcfEnabled = true;
 
 		while (!window.shouldClose())
 		{	
@@ -254,7 +255,10 @@ int main()
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);
 			gui.Rotation(rotation);
-			gui.sliderPCF(pcfValue);
+
+			if(pcfEnabled)
+				gui.sliderPCF(pcfValue);
+			gui.PCF(pcfEnabled);
 
 			float currTime = static_cast<float>(glfwGetTime());
 			deltaTime = currTime - lastFrame;
@@ -335,6 +339,7 @@ int main()
 			normalMap->bind(ke::TextureSlot::NormalMap);
 
 			shader->setUniformInt("pcfValue", pcfValue);
+			shader->setUniformInt("hasPCF", pcfEnabled);
 
 			shader->setUniformMatrix4("u_MVP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * transform.getModelMatrix());
 

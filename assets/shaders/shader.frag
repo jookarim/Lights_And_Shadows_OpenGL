@@ -59,6 +59,7 @@ uniform int dirLightsCount;
 uniform int pointLightsCount;
 uniform bool normalMapping = false;
 uniform int pcfValue;
+uniform bool hasPCF = true;
 
 float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
 {
@@ -75,29 +76,42 @@ float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
 
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
 
-    float shadowValue = 0.0;
-
-    vec2 texelSize = 1.0 / vec2(textureSize(shadow[index], 0));
-
-    for (int x = -(pcfValue / 2); x <= (pcfValue / 2); ++x)
+    if (hasPCF)
     {
-        for (int y = -(pcfValue / 2); y <= (pcfValue / 2); ++y)
-        {
-            float closestDepth = texture(shadow[index], projCoords.xy + vec2(x, y) * texelSize).r;
+        float shadowValue = 0.0;
 
-            shadowValue += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+        vec2 texelSize = 1.0 / vec2(textureSize(shadow[index], 0));
+
+        for (int x = -(pcfValue / 2); x <= (pcfValue / 2); ++x)
+        {
+            for (int y = -(pcfValue / 2); y <= (pcfValue / 2); ++y)
+            {
+                float closestDepth = texture(shadow[index], projCoords.xy + vec2(x, y) * texelSize).r;
+
+                shadowValue += (currentDepth - bias > closestDepth) ? 1.0 : 0.0;
+            }
+        }
+
+        int kernel = max(pcfValue, 1);
+        if (kernel % 2 == 0)
+            kernel += 1;
+
+        shadowValue /= 1 * kernel * kernel;
+
+        return shadowValue;
+    }
+
+    else
+    {
+        float closestDepth = texture(shadow[index], projCoords.xy).r;
+        if (currentDepth - bias > closestDepth)
+        {
+			return 1.0;
         }
     }
 
-    int kernel = max(pcfValue, 1);
-    if (kernel % 2 == 0)
-        kernel += 1;
-
-	shadowValue /= 1 * kernel * kernel;
-
-    return shadowValue;
+    return 0.0;
 }
-
 
 
 vec3 calculateDirLight(int index, DirectionalLight dirLight, vec3 viewPos, vec3 normal,vec3 albedoColor)
