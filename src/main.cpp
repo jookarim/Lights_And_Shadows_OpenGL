@@ -244,6 +244,7 @@ int main()
 		float angle = 0.f;
 
 		float deltaTime = 0.f, lastFrame = 0.f;
+		int pcfValue = 1;
 
 		while (!window.shouldClose())
 		{	
@@ -253,6 +254,7 @@ int main()
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);
 			gui.Rotation(rotation);
+			gui.sliderPCF(pcfValue);
 
 			float currTime = static_cast<float>(glfwGetTime());
 			deltaTime = currTime - lastFrame;
@@ -332,6 +334,8 @@ int main()
 			texture->bind(ke::TextureSlot::Albedo);
 			normalMap->bind(ke::TextureSlot::NormalMap);
 
+			shader->setUniformInt("pcfValue", pcfValue);
+
 			shader->setUniformMatrix4("u_MVP", camera.getProjectionMatrix(window.getWidth(), window.getHeight()) * camera.getViewMatrix() * transform.getModelMatrix());
 
 			shader->setUniformMatrix4("u_Model",  transform.getModelMatrix());
@@ -350,7 +354,7 @@ int main()
 
 			shader->setUniformMat3("u_Norm", glm::mat3(glm::transpose(glm::inverse(sphereTransform.getModelMatrix()))));
 			shader->setUniformInt("normalMapping", hasNormaMap);
-
+			
 			ke::RenderCommand::DrawIndexed(sphereMesh.getVAO(), sphereMesh.getIndexCount());
 
 			if (grayscale)

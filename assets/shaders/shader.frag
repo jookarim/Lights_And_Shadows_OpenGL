@@ -58,6 +58,7 @@ uniform vec3 viewPos;
 uniform int dirLightsCount;
 uniform int pointLightsCount;
 uniform bool normalMapping = false;
+uniform int pcfValue;
 
 float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
 {
@@ -78,9 +79,9 @@ float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
 
     vec2 texelSize = 1.0 / vec2(textureSize(shadow[index], 0));
 
-    for (int x = -2; x <= 2; ++x)
+    for (int x = -(pcfValue / 2); x <= (pcfValue / 2); ++x)
     {
-        for (int y = -2; y <= 2; ++y)
+        for (int y = -(pcfValue / 2); y <= (pcfValue / 2); ++y)
         {
             float closestDepth = texture(shadow[index], projCoords.xy + vec2(x, y) * texelSize).r;
 
@@ -88,7 +89,11 @@ float calculateShadow(int index, vec4 fragPosLightSpace, vec3 normal)
         }
     }
 
-    shadowValue *= 1.0 / 25.0;
+    int kernel = max(pcfValue, 1);
+    if (kernel % 2 == 0)
+        kernel += 1;
+
+	shadowValue /= 1 * kernel * kernel;
 
     return shadowValue;
 }

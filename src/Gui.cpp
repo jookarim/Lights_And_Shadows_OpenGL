@@ -98,4 +98,27 @@ namespace ke
 	{
 		ImGui::Checkbox("Rotation", &rotation);
 	}
+
+	void Gui::sliderPCF(int& pcfValue)
+	{
+		int exponent = pcfValue * pcfValue;
+
+		if (ImGui::SliderInt("PCF Samples", &exponent, 1, 81))
+		{
+			int kernel = static_cast<int>(std::round(std::sqrt(exponent)));
+			
+			kernel = std::max(1, kernel);
+			
+			if (kernel % 2 == 0)
+				kernel += 1;
+			
+			kernel = std::min(kernel, 9);
+
+			pcfValue = kernel;
+		}
+
+		std::string samplesText = "PCF Samples" + std::to_string((int)pcfValue) + "x" + std::to_string((int)pcfValue);
+
+		ImGui::Text(samplesText.c_str()); 
+	}
 }
