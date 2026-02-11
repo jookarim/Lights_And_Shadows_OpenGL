@@ -101,22 +101,9 @@ namespace ke
 
 	void Gui::sliderPCF(int& pcfValue)
 	{
-		int exponent = pcfValue * pcfValue;
-
-		if (ImGui::SliderInt("PCF Samples", &exponent, 1, 81))
+		if (ImGui::SliderInt("PCF Samples", &pcfValue, 1, 19))
 		{
-			int kernel = static_cast<int>(std::sqrt(exponent));
 
-			constexpr int maxSamples = 81;
-			int maxKernel = static_cast<int>(std::sqrt(maxSamples));
-			kernel = std::min(kernel, maxKernel);
-
-			if (kernel % 2 == 0)
-				kernel += 1;
-
-			kernel = std::min(kernel, 9);
-
-			pcfValue = kernel;
 		}
 
 		std::string samplesText = "PCF Samples " + std::to_string((int)pcfValue) + "x" + std::to_string((int)pcfValue);
