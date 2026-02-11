@@ -22,7 +22,7 @@ namespace ke
 		void NormalMapping(bool& hasNormalMapping);
 		void GrayScale(bool& grayScale);
 		void Animation(bool& animation);
-
+		void Rotation(bool& rotation);
 		void Draw(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows, bool& grayscale, bool& normalMapping);
 
 		void BeginFrame();

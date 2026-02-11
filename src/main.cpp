@@ -239,13 +239,11 @@ int main()
 		bool grayscale = true;
 		bool hasNormaMap = true;
 		bool animation = true;
+		bool rotation = true;
 
 		float angle = 0.f;
 
 		float deltaTime = 0.f, lastFrame = 0.f;
-
-		const GLubyte* renderer = glGetString(GL_RENDERER);
-		std::cout << "Renderer: " << renderer << "\n";
 
 		while (!window.shouldClose())
 		{	
@@ -254,6 +252,7 @@ int main()
 			gui.GrayScale(grayscale);
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);
+			gui.Rotation(rotation);
 
 			float currTime = static_cast<float>(glfwGetTime());
 			deltaTime = currTime - lastFrame;
@@ -263,10 +262,12 @@ int main()
 			{
 				sphereTransform.position.x = cos(angle);
 				sphereTransform.position.z = sin(angle);
-				sphereTransform.rotation.y += (ROTATION_SPEED * deltaTime);
 
 				angle += ANGLE_INCREASE * deltaTime;
 			}
+
+			if(rotation)
+				sphereTransform.rotation.y += (ROTATION_SPEED * deltaTime);
 
 			window.pollEvents();
 

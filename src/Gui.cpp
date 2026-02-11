@@ -93,4 +93,9 @@ namespace ke
 	{
 		ImGui::Checkbox("Animation", &animation);
 	}
+
+	void Gui::Rotation(bool& rotation)
+	{
+		ImGui::Checkbox("Rotation", &rotation);
+	}
 }
