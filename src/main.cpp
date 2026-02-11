@@ -251,6 +251,8 @@ int main()
 		{	
 			gui.BeginFrame();
 
+			gui.PrintFPS();
+
 			gui.GrayScale(grayscale);
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);

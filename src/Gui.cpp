@@ -106,14 +106,14 @@ namespace ke
 		if (ImGui::SliderInt("PCF Samples", &exponent, 1, 81))
 		{
 			int kernel = static_cast<int>(std::sqrt(exponent));
-			
+
 			constexpr int maxSamples = 81;
 			int maxKernel = static_cast<int>(std::sqrt(maxSamples));
 			kernel = std::min(kernel, maxKernel);
-			
+
 			if (kernel % 2 == 0)
 				kernel += 1;
-			
+
 			kernel = std::min(kernel, 9);
 
 			pcfValue = kernel;
@@ -121,11 +121,20 @@ namespace ke
 
 		std::string samplesText = "PCF Samples " + std::to_string((int)pcfValue) + "x" + std::to_string((int)pcfValue);
 
-		ImGui::Text(samplesText.c_str()); 
+		ImGui::Text(samplesText.c_str());
 	}
 
 	void Gui::PCF(bool& pcfEnabled)
 	{
 		ImGui::Checkbox("Enable PCF", &pcfEnabled);
+	}
+
+	void Gui::PrintFPS()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		std::string fpsTxt = "FPS: " + std::to_string(io.Framerate);
+
+		ImGui::Text("%s", fpsTxt.c_str());
 	}
 }
