@@ -51,6 +51,8 @@ namespace ke
 
 	void Gui::UpdateLights(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows)
 	{
+		AddPointLight(pointLights);
+
 		if (ImGui::CollapsingHeader("Point Lights"))
 		{
 			for (size_t i = 0; i < pointLights.size(); ++i)
@@ -68,20 +70,22 @@ namespace ke
 			}
 		}
 
+		AddDirectionalLight(dirLights, dirShadows);
+
 		if (ImGui::CollapsingHeader("Directional Lights"))
 		{
 			for (size_t i = 0; i < dirLights.size(); ++i)
 			{
-				ImGui::PushID((int)i + 2);
+				ImGui::PushID((int)i);
+
+				dirShadows[i]->updateFromLight(dirLights[i]);
+				dirLights[i].lightSpaceMatrix = dirShadows[i]->getLightSpaceMatrix();
 
 				ImGui::Text("Directional Light %d", (int)i);
 				ImGui::SliderFloat3("Direction", &dirLights[i].direction.x, -3.f, 3.f);
 				ImGui::ColorEdit3("Ambient", &dirLights[i].ambient.x);
 				ImGui::ColorEdit3("Diffuse", &dirLights[i].diffuse.x);
 				ImGui::ColorEdit3("Specular", &dirLights[i].specular.x);
-
-				dirShadows[i]->updateFromLight(dirLights[i]);
-				dirLights[i].lightSpaceMatrix = dirShadows[i]->getLightSpaceMatrix();
 
 				ImGui::Separator();
 				ImGui::PopID();
@@ -124,4 +128,40 @@ namespace ke
 
 		ImGui::Text("%s", fpsTxt.c_str());
 	}
+
+	void Gui::AddDirectionalLight(std::vector<DirectionalLight>& dirLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows)
+	{
+		if (ImGui::Button("Add Directional Light"))
+		{
+			DirectionalLight newLight{};
+
+			newLight.ambient = glm::vec3(0.08f);
+			newLight.diffuse = glm::vec3(1.f);
+			newLight.specular = glm::vec3(1.f);
+			newLight.direction = glm::normalize(glm::vec3(-1.f, -1.f, -1.f));
+
+			dirLights.push_back(newLight);
+
+			int index = static_cast<int>(dirLights.size()) - 1;
+
+			dirShadows.push_back(std::make_unique<DirectionalShadow>(glm::ivec2(2048, 2048), AssetManager::getInstance(), dirLights[index], index));
+		}
+	}
+
+	void Gui::AddPointLight(std::vector<PointLight>& pointLights)
+	{
+		if (ImGui::Button("Add Point Light"))
+		{
+			PointLight newLight{};
+			newLight.ambient = glm::vec3(0.08f);
+			newLight.diffuse = glm::vec3(1.f);
+			newLight.specular = glm::vec3(1.f);
+			newLight.position = glm::vec3(0.f, 5.f, 0.f);
+			newLight.constant = 1.f;
+			newLight.linear = 0.09f;
+			newLight.quadric = 0.032f;
+			pointLights.push_back(newLight);
+		}
+	}
+
 }

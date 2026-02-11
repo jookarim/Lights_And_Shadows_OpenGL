@@ -6,6 +6,7 @@
 #include "Lights.h"
 #include "Window.h"
 #include "DirectionalShadow.h"
+#include <memory>
 
 namespace ke
 {
@@ -14,6 +15,8 @@ namespace ke
 	private:
 		void Init(const ke::Window& window);
 		void Shutdown() noexcept;
+		void AddDirectionalLight(std::vector<DirectionalLight>& dirLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows);
+		void AddPointLight(std::vector<PointLight>& pointLights);
 	public:
 		Gui(const ke::Window& window);
 		~Gui() noexcept;
@@ -26,7 +29,7 @@ namespace ke
 		void sliderPCF(int& pcfValue);
 		void PCF(bool& pcfEnabled);
 		void PrintFPS();
-
+		
 		void Draw(std::vector<DirectionalLight>& dirLights, std::vector<PointLight>& pointLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows, bool& grayscale, bool& normalMapping);
 
 		void BeginFrame();
