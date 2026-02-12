@@ -168,7 +168,7 @@ namespace ke
 			internalFormat = GL_RGBA8;
 			dataType = GL_UNSIGNED_BYTE;
 		}
-
+		
 		glTextureStorage2D(m_id, 1, internalFormat, desc.width, desc.height);
 
 		if(desc.data != nullptr)

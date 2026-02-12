@@ -103,11 +103,49 @@ namespace ke
 		ImGui::Checkbox("Rotation", &rotation);
 	}
 
-	void Gui::sliderPCF(int& pcfValue)
+	void Gui::sliderPCF(int& pcfValue, bool& ai)
 	{
-		if (ImGui::SliderInt("PCF Samples", &pcfValue, 1, 19))
-		{
+		float maxSamples = 19.f;
 
+		if (ImGui::Checkbox("SQS (Sample Quality Scaling) ", &ai))
+		{
+		}
+
+		if (!ai)
+		{
+			if (ImGui::SliderInt("PCF Samples", &pcfValue, 1, maxSamples))
+			{
+
+			}
+		}
+
+		if (ai)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+			float deltaTime = io.DeltaTime;
+
+			static float timer = 0.f;
+			static float fpsAccum = 0.f;
+			static int frameCount = 0;
+
+			timer += deltaTime;
+			fpsAccum += io.Framerate;  
+			frameCount++;
+
+			if (timer >= 1.f)
+			{
+				float avgFPS = fpsAccum / frameCount;
+
+				if (avgFPS >= 130.f && pcfValue < 17)
+					pcfValue += 2;
+
+				else if (avgFPS <= 85.f && pcfValue > 3)
+					pcfValue -= 2;
+
+				timer = 0.f;
+				fpsAccum = 0.f;
+				frameCount = 0;
+			}
 		}
 
 		std::string samplesText = "PCF Samples " + std::to_string((int)pcfValue) + "x" + std::to_string((int)pcfValue);
@@ -124,9 +162,7 @@ namespace ke
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
-		std::string fpsTxt = "FPS: " + std::to_string(io.Framerate);
-
-		ImGui::Text("%s", fpsTxt.c_str());
+		ImGui::Text("FPS: %.3f", io.Framerate);
 	}
 
 	void Gui::AddDirectionalLight(std::vector<DirectionalLight>& dirLights, std::vector<std::unique_ptr<DirectionalShadow>>& dirShadows)

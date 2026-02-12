@@ -28,7 +28,11 @@ namespace ke
 		return shader;
 	}
 
-
+	void Shader::setUniformFloat(std::string_view name, float value) 
+	{ 
+		GLint location = getLocation(name); 
+		glUniform1f(location, value); 
+	}
 	std::string Shader::loadFromFile(std::string_view path)
 	{
 		std::ifstream file(path.data());

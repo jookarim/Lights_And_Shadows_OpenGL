@@ -47,6 +47,7 @@ namespace ke
 		void setUniformInt(std::string_view name, int value);
 		void setUniformVec3(std::string_view name, const glm::vec3& value);
 		void setUniformMat3(std::string_view name, const glm::mat3& value);
+		void setUniformFloat(std::string_view name, float value);
 
 		Shader(const Shader&) = delete;
 		Shader& operator=(const Shader&) = delete;

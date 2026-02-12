@@ -246,6 +246,7 @@ int main()
 		float deltaTime = 0.f, lastFrame = 0.f;
 		int pcfValue = 1;
 		bool pcfEnabled = true;
+		bool ai = false;
 
 		while (!window.shouldClose())
 		{	
@@ -257,9 +258,9 @@ int main()
 			gui.NormalMapping(hasNormaMap);
 			gui.Animation(animation);
 			gui.Rotation(rotation);
-
+			
 			if(pcfEnabled)
-				gui.sliderPCF(pcfValue);
+				gui.sliderPCF(pcfValue, ai);
 			gui.PCF(pcfEnabled);
 
 			float currTime = static_cast<float>(glfwGetTime());
