@@ -53,11 +53,13 @@ namespace ke
 	{
 		AddPointLight(pointLights);
 
-		if (ImGui::CollapsingHeader("Point Lights"))
+		std::string pointHeader = "Point Lights (" + std::to_string(pointLights.size()) + ")";
+
+		if (ImGui::CollapsingHeader(pointHeader.data()))
 		{
 			for (size_t i = 0; i < pointLights.size(); ++i)
 			{
-				ImGui::PushID((int)i + 1);
+				ImGui::PushID(("PointLight_" + std::to_string(i)).c_str());
 
 				ImGui::Text("Point Light %d", (int)i);
 				ImGui::SliderFloat3("Position", &pointLights[i].position.x, -30.f, 30.f);
@@ -72,11 +74,13 @@ namespace ke
 
 		AddDirectionalLight(dirLights, dirShadows);
 
-		if (ImGui::CollapsingHeader("Directional Lights"))
+		std::string dirHeader = "Directional Lights (" + std::to_string(dirLights.size()) + ")";
+
+		if (ImGui::CollapsingHeader(dirHeader.data()))
 		{
 			for (size_t i = 0; i < dirLights.size(); ++i)
 			{
-				ImGui::PushID((int)i);
+				ImGui::PushID(("DirLight_" + std::to_string(i)).c_str());
 
 				dirShadows[i]->updateFromLight(dirLights[i]);
 				dirLights[i].lightSpaceMatrix = dirShadows[i]->getLightSpaceMatrix();
