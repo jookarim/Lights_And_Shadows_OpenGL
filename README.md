@@ -29,18 +29,18 @@ Shadow Pass → Scene Rendering Pass → Lighting → Final Output
 
 ## 📂 Project Structure
 
-/assets
-/src
-/include
+- /assets
+- /src
+- /include
 
 ## ⚙️ Build & Run
 
-git clone https://github.com/jookarim/Lights_And_Shadows_OpenGL.git
-cd Lights_And_Shadows_OpenGL
-mkdir build
-cd build
-cmake ..
-cmake --build .
+- git clone https://github.com/jookarim/Lights_And_Shadows_OpenGL.git
+- cd Lights_And_Shadows_OpenGL
+- mkdir build
+- cd build
+- cmake ..
+- cmake --build .
 
 ## 📌 Author
 
